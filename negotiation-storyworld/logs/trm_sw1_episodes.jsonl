@@ -1,0 +1,5 @@
+{"episode": 0, "trace_root": "038826fba53d2a26e39b3a7db565efae16b0aa09cb38326fffec6f6d947eef56", "output_commitment": "b66ce7042dd2b44f375494386147c1971975ca04cc746183ec1ce1542f102b48", "done": true, "final_outcome": "maneuver"}
+{"episode": 1, "trace_root": "b97de1c29e3955173ed7de674a343109bf4abac6b6a784113f04ae42867c6598", "output_commitment": "ecebff6c699f372e7d9d2c29601b0fc63fcf70f00d49c41dcfb68def34031c5d", "done": true, "final_outcome": "maneuver"}
+{"episode": 2, "trace_root": "01d8e36f7a1c088a3accc49b8a6c66b6c37d6867847e81d61fd6e1aabcb148c3", "output_commitment": "f7369fe56f6559595fbc9bdf7d46db0ff063454c42bd5672999f11f9546ded67", "done": true, "final_outcome": "maneuver"}
+{"episode": 3, "trace_root": "eb215f7d4842092b334f28b9d530edaefcfd910f962e0675a4e31eeced5a1714", "output_commitment": "98cadc45a23f361e760d8d5ab06e870f2aa7083a2782204243bfc4389b12cbbd", "done": true, "final_outcome": "maneuver"}
+{"episode": 4, "trace_root": "24169a67978b5fdd0655296e32cf581396246781a646b7dad6a3e627daa26de0", "output_commitment": "61b32164123184185df4a770bac8ab4bfd72a8317c39ac6ed938b2064f7e23da", "done": true, "final_outcome": "maneuver"}

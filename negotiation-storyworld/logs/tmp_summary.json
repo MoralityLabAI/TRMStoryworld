@@ -1,0 +1,10 @@
+{
+  "episodes": 2,
+  "steps": 4,
+  "completed_episodes": 0,
+  "outcomes": {
+    "coalition_formed": 2
+  },
+  "coalition_recommendation_steps": 4,
+  "defection_recommendation_steps": 4
+}

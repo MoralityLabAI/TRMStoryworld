@@ -1,0 +1,10 @@
+{
+  "episodes": 5,
+  "steps": 30,
+  "completed_episodes": 5,
+  "outcomes": {
+    "maneuver": 5
+  },
+  "coalition_recommendation_steps": 30,
+  "defection_recommendation_steps": 30
+}

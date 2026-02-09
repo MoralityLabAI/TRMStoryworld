@@ -1,0 +1,2 @@
+{"episode": 0, "trace_root": "ca9619c282f8af1e214742fb5d553c68654b3861cbdc26cd1a3805649b7087a5", "output_commitment": "ab4d719b8a975cde786c7f09afd16f6829fb26853e2967b7f4bfa52c23b4ef16", "done": false, "final_outcome": "coalition_formed"}
+{"episode": 1, "trace_root": "e6f5c13bf3f2f20fa079645d931520b8cb492b92867b95bba4e5ad6bba20c715", "output_commitment": "7c652ac68fe4edc88cbe1130262ed215d20a35615a42d0de798a3d2856ec3fc1", "done": false, "final_outcome": "coalition_formed"}
