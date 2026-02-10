@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List
 
-from eval_storyworld_rollout import append_jsonl, run_episode, summarize, write_jsonl
+from eval_storyworld_rollout import append_jsonl, compute_fft_report, pick_series_from_steps, run_episode, summarize, write_json, write_jsonl
 from identity_utils import git_commit, make_run_identity, sha256_hex as h_hex
 from model_utils import controller_from_args, memory_snapshot
 from swmd_utils import parse_swmd, stable_json
@@ -43,6 +43,9 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Store per-step arrays inside episode rows (disabled by default to avoid duplicate payloads).",
     )
+    p.add_argument("--emit-fft", action="store_true", help="Emit FFT summary JSON from rollout signals.")
+    p.add_argument("--fft-top-k", type=int, default=5, help="Top FFT peaks to retain.")
+    p.add_argument("--fft-max-points", type=int, default=256, help="Max point count for FFT padding/truncation.")
     return p.parse_args()
 
 
@@ -92,6 +95,8 @@ def main() -> int:
 
         base_eps: List[Dict[str, Any]] = []
         adapter_eps: List[Dict[str, Any]] = []
+        base_pick_series: Dict[int, List[float]] = {}
+        adapter_pick_series: Dict[int, List[float]] = {}
         base_trace_rows = 0
         adapter_trace_rows = 0
         last_hb = 0.0
@@ -145,6 +150,8 @@ def main() -> int:
                 append_jsonl(base_trace_path, b_steps)
                 append_jsonl(base_ep_path, [b])
                 base_trace_rows += step_count
+                if args.emit_fft:
+                    base_pick_series[ep] = pick_series_from_steps(b_steps)
                 base_eps.append(b)
                 maybe_heartbeat("base", ep)
                 enforce_rss_cap()
@@ -185,6 +192,8 @@ def main() -> int:
                 append_jsonl(adapter_trace_path, a_steps)
                 append_jsonl(adapter_ep_path, [a])
                 adapter_trace_rows += step_count
+                if args.emit_fft:
+                    adapter_pick_series[ep] = pick_series_from_steps(a_steps)
                 adapter_eps.append(a)
                 maybe_heartbeat("adapter", ep)
                 enforce_rss_cap()
@@ -197,6 +206,27 @@ def main() -> int:
                     torch.cuda.empty_cache()
             except Exception:
                 pass
+
+        base_fft_path = out_dir / "rollout_base_fft.json"
+        adapter_fft_path = out_dir / "rollout_adapter_fft.json"
+        if args.emit_fft and need_base:
+            write_json(
+                base_fft_path,
+                compute_fft_report(
+                    base_pick_series,
+                    top_k=max(1, int(args.fft_top_k)),
+                    max_points=max(2, int(args.fft_max_points)),
+                ),
+            )
+        if args.emit_fft and need_adapter:
+            write_json(
+                adapter_fft_path,
+                compute_fft_report(
+                    adapter_pick_series,
+                    top_k=max(1, int(args.fft_top_k)),
+                    max_points=max(2, int(args.fft_max_points)),
+                ),
+            )
 
         summary: Dict[str, Any] = {
             "mission": "swmd-rollout-eval",
@@ -211,6 +241,8 @@ def main() -> int:
                 "adapter_trace": str(adapter_trace_path) if need_adapter else "",
                 "base_episodes": str(base_ep_path) if need_base else "",
                 "adapter_episodes": str(adapter_ep_path) if need_adapter else "",
+                "base_fft": str(base_fft_path) if (need_base and args.emit_fft) else "",
+                "adapter_fft": str(adapter_fft_path) if (need_adapter and args.emit_fft) else "",
             },
             "runtime": {
                 "episodes": args.episodes,
@@ -223,6 +255,9 @@ def main() -> int:
                 "require_gpu": bool(args.require_gpu),
                 "allow_large_model": bool(args.allow_large_model),
                 "max_model_params_millions": float(args.max_model_params_millions),
+                "emit_fft": bool(args.emit_fft),
+                "fft_top_k": int(args.fft_top_k),
+                "fft_max_points": int(args.fft_max_points),
             },
         }
         repo_root = Path(__file__).resolve().parents[2]
@@ -242,6 +277,9 @@ def main() -> int:
                 "require_gpu": bool(args.require_gpu),
                 "allow_large_model": bool(args.allow_large_model),
                 "max_model_params_millions": float(args.max_model_params_millions),
+                "emit_fft": bool(args.emit_fft),
+                "fft_top_k": int(args.fft_top_k),
+                "fft_max_points": int(args.fft_max_points),
             },
         )
         summary["run_identity_hash"] = h_hex(stable_json(summary["run_identity"]))
