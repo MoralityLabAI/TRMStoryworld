@@ -127,6 +127,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--adapter-path", type=str, default="")
     parser.add_argument("--device", type=str, default="cpu")
     parser.add_argument("--dtype", type=str, default="auto", choices=["auto", "float16", "bfloat16", "float32"])
+    parser.add_argument("--require-gpu", action="store_true", help="Fail if CUDA is unavailable or model is not on GPU.")
+    parser.add_argument("--allow-large-model", action="store_true", help="Allow models above the size cap.")
+    parser.add_argument("--max-model-params-millions", type=float, default=200.0, help="Reject larger models unless --allow-large-model.")
     parser.add_argument("--out-dir", type=str, default="tools/bench/out")
     parser.add_argument("--dataset-hash", type=str, default="")
     parser.add_argument("--rows-merkle-root", type=str, default="")
@@ -246,6 +249,9 @@ def main() -> int:
             adapter_path=None,
             device=args.device,
             dtype=args.dtype,
+            require_gpu=args.require_gpu,
+            allow_large_model=args.allow_large_model,
+            max_model_params_millions=args.max_model_params_millions,
         )
         for i in range(args.episodes):
             b_steps: List[Dict[str, Any]] = []
@@ -282,6 +288,9 @@ def main() -> int:
             adapter_path=(args.adapter_path or None),
             device=args.device,
             dtype=args.dtype,
+            require_gpu=args.require_gpu,
+            allow_large_model=args.allow_large_model,
+            max_model_params_millions=args.max_model_params_millions,
         )
         for i in range(args.episodes):
             a_steps: List[Dict[str, Any]] = []
@@ -328,6 +337,9 @@ def main() -> int:
             "max_steps": args.max_steps,
             "include_prompt_in_trace": bool(args.include_prompt_in_trace),
             "include_steps_in_episodes": bool(args.include_steps_in_episodes),
+            "require_gpu": bool(args.require_gpu),
+            "allow_large_model": bool(args.allow_large_model),
+            "max_model_params_millions": float(args.max_model_params_millions),
         },
         "evidence_paths": {
             "base_trace": str(base_trace_path) if need_base else "",
@@ -350,6 +362,9 @@ def main() -> int:
             "device": args.device,
             "episodes": args.episodes,
             "max_steps": args.max_steps,
+            "require_gpu": bool(args.require_gpu),
+            "allow_large_model": bool(args.allow_large_model),
+            "max_model_params_millions": float(args.max_model_params_millions),
         },
     )
     summary["run_identity_hash"] = h_hex(stable_json(summary["run_identity"]))

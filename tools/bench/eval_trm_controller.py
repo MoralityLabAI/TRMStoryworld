@@ -31,6 +31,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--adapter-path", type=str, default="", help="Optional PEFT adapter path.")
     parser.add_argument("--device", type=str, default="cpu", help='Transformers device_map, e.g. "auto" or "cpu".')
     parser.add_argument("--dtype", type=str, default="auto", choices=["auto", "float16", "bfloat16", "float32"])
+    parser.add_argument("--require-gpu", action="store_true", help="Fail if CUDA is unavailable or model is not on GPU.")
+    parser.add_argument("--allow-large-model", action="store_true", help="Allow models above the size cap.")
+    parser.add_argument("--max-model-params-millions", type=float, default=200.0, help="Reject larger models unless --allow-large-model.")
     parser.add_argument("--max-new-tokens", type=int, default=8)
     parser.add_argument("--max-rows", type=int, default=0, help="Optional cap for quick eval (0 = all rows).")
     parser.add_argument("--heartbeat-rows", type=int, default=250, help="Emit memory heartbeat every N evaluated rows (0=off).")
@@ -51,6 +54,9 @@ def main() -> int:
         adapter_path=(args.adapter_path or None),
         device=args.device,
         dtype=args.dtype,
+        require_gpu=args.require_gpu,
+        allow_large_model=args.allow_large_model,
+        max_model_params_millions=args.max_model_params_millions,
     )
 
     total = 0
@@ -127,6 +133,9 @@ def main() -> int:
         "dtype": args.dtype,
         "device": args.device,
         "max_new_tokens": args.max_new_tokens,
+        "require_gpu": bool(args.require_gpu),
+        "allow_large_model": bool(args.allow_large_model),
+        "max_model_params_millions": float(args.max_model_params_millions),
     }
     summary = {
         "dataset": str(dataset),
@@ -141,6 +150,9 @@ def main() -> int:
         "runtime": {
             **memory_snapshot(),
             "heartbeat_rows": args.heartbeat_rows,
+            "require_gpu": bool(args.require_gpu),
+            "allow_large_model": bool(args.allow_large_model),
+            "max_model_params_millions": float(args.max_model_params_millions),
         },
     }
     summary["run_identity"] = make_run_identity(

@@ -26,6 +26,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--adapter-path", type=str, default="")
     p.add_argument("--device", type=str, default="cpu")
     p.add_argument("--dtype", type=str, default="auto", choices=["auto", "float16", "bfloat16", "float32"])
+    p.add_argument("--require-gpu", action="store_true", help="Fail if CUDA is unavailable or model is not on GPU.")
+    p.add_argument("--allow-large-model", action="store_true", help="Allow models above the size cap.")
+    p.add_argument("--max-model-params-millions", type=float, default=200.0, help="Reject larger models unless --allow-large-model.")
     p.add_argument("--out-dir", type=str, default="tools/bench/out/rollout_batch")
     p.add_argument("--run-modes", type=str, default="adapter-only", choices=["both", "adapter-only", "base-only"])
     p.add_argument("--heartbeat-seconds", type=int, default=30)
@@ -116,7 +119,15 @@ def main() -> int:
                 raise SystemExit(f"rss limit exceeded: {_rss_mb():.1f}MB > {args.max_rss_mb}MB")
 
         if need_base:
-            base_controller = controller_from_args(args.base_model or None, None, args.device, args.dtype)
+            base_controller = controller_from_args(
+                args.base_model or None,
+                None,
+                args.device,
+                args.dtype,
+                require_gpu=args.require_gpu,
+                allow_large_model=args.allow_large_model,
+                max_model_params_millions=args.max_model_params_millions,
+            )
             for ep in range(args.episodes):
                 b_steps: List[Dict[str, Any]] = []
                 b = run_episode(
@@ -148,7 +159,15 @@ def main() -> int:
                 pass
 
         if need_adapter:
-            adapter_controller = controller_from_args(args.base_model or None, args.adapter_path or None, args.device, args.dtype)
+            adapter_controller = controller_from_args(
+                args.base_model or None,
+                args.adapter_path or None,
+                args.device,
+                args.dtype,
+                require_gpu=args.require_gpu,
+                allow_large_model=args.allow_large_model,
+                max_model_params_millions=args.max_model_params_millions,
+            )
             for ep in range(args.episodes):
                 a_steps: List[Dict[str, Any]] = []
                 a = run_episode(
@@ -201,6 +220,9 @@ def main() -> int:
                 "adapter_trace_rows": adapter_trace_rows,
                 "include_prompt_in_trace": bool(args.include_prompt_in_trace),
                 "include_steps_in_episodes": bool(args.include_steps_in_episodes),
+                "require_gpu": bool(args.require_gpu),
+                "allow_large_model": bool(args.allow_large_model),
+                "max_model_params_millions": float(args.max_model_params_millions),
             },
         }
         repo_root = Path(__file__).resolve().parents[2]
@@ -217,6 +239,9 @@ def main() -> int:
                 "device": args.device,
                 "episodes": args.episodes,
                 "max_steps": args.max_steps,
+                "require_gpu": bool(args.require_gpu),
+                "allow_large_model": bool(args.allow_large_model),
+                "max_model_params_millions": float(args.max_model_params_millions),
             },
         )
         summary["run_identity_hash"] = h_hex(stable_json(summary["run_identity"]))

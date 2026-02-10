@@ -10,6 +10,7 @@ from typing import Any, Dict, Optional
 
 CHOICE_RE = re.compile(r"^C(\d+)\s+", re.MULTILINE)
 PICK_RE = re.compile(r"PICK\s+(\d+)", re.IGNORECASE)
+SIZE_HINT_RE = re.compile(r"(\d+(?:\.\d+)?)\s*([bm])")
 
 
 @dataclass
@@ -28,9 +29,32 @@ class HeuristicController:
 
 
 class HFController:
-    def __init__(self, model_path: str, adapter_path: Optional[str], device: str, dtype: str):
+    def __init__(
+        self,
+        model_path: str,
+        adapter_path: Optional[str],
+        device: str,
+        dtype: str,
+        require_gpu: bool = False,
+        allow_large_model: bool = False,
+        max_model_params_millions: float = 200.0,
+    ):
         from transformers import AutoModelForCausalLM, AutoTokenizer
         import torch
+
+        if require_gpu:
+            if not torch.cuda.is_available():
+                raise RuntimeError("GPU required (--require-gpu) but CUDA is not available.")
+            if str(device).lower().strip() == "cpu":
+                raise RuntimeError("GPU required (--require-gpu) but device was set to cpu.")
+
+        if not allow_large_model:
+            hinted = model_size_hint_millions(model_path)
+            if hinted is not None and hinted > max_model_params_millions:
+                raise RuntimeError(
+                    f"model path appears large (~{hinted:.1f}M params) > cap {max_model_params_millions:.1f}M. "
+                    "Use --allow-large-model to override."
+                )
 
         dtype_map = {
             "float16": torch.float16,
@@ -39,8 +63,17 @@ class HFController:
             "auto": None,
         }
         torch_dtype = dtype_map.get(dtype, None)
+        load_device_map: Any = device
+        if require_gpu:
+            # Force single-GPU placement instead of auto CPU offload.
+            load_device_map = {"": 0}
         tok = AutoTokenizer.from_pretrained(model_path, use_fast=True)
-        model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch_dtype, device_map=device)
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path,
+            torch_dtype=torch_dtype,
+            device_map=load_device_map,
+            low_cpu_mem_usage=True,
+        )
         if adapter_path:
             from peft import PeftModel
             offload_dir = Path(__file__).resolve().parent / "out" / "offload"
@@ -50,8 +83,19 @@ class HFController:
             try:
                 model = PeftModel.from_pretrained(model, adapter_path, offload_folder=str(offload_dir))
             except KeyError:
-                model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch_dtype, device_map="cpu")
+                model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch_dtype, device_map=load_device_map)
                 model = PeftModel.from_pretrained(model, adapter_path)
+        if not allow_large_model:
+            total_params_m = float(sum(p.numel() for p in model.parameters())) / 1_000_000.0
+            if total_params_m > max_model_params_millions:
+                raise RuntimeError(
+                    f"loaded model is {total_params_m:.1f}M params, above cap {max_model_params_millions:.1f}M. "
+                    "Use --allow-large-model to override."
+                )
+        if require_gpu:
+            dev = str(getattr(model, "device", "")).lower()
+            if "cuda" not in dev:
+                raise RuntimeError(f"GPU required (--require-gpu) but model device is '{dev or 'unknown'}'.")
         model.eval()
         for param in model.parameters():
             param.requires_grad_(False)
@@ -123,7 +167,33 @@ def parse_target_pick(target: str) -> Optional[int]:
     return parse_pick(target)
 
 
-def controller_from_args(model_path: Optional[str], adapter_path: Optional[str], device: str, dtype: str):
+def model_size_hint_millions(model_path: str) -> Optional[float]:
+    text = str(model_path).lower().replace("_", "").replace("-", "")
+    match = SIZE_HINT_RE.search(text)
+    if not match:
+        return None
+    value = float(match.group(1))
+    unit = match.group(2)
+    return value * 1000.0 if unit == "b" else value
+
+
+def controller_from_args(
+    model_path: Optional[str],
+    adapter_path: Optional[str],
+    device: str,
+    dtype: str,
+    require_gpu: bool = False,
+    allow_large_model: bool = False,
+    max_model_params_millions: float = 200.0,
+):
     if not model_path:
         return HeuristicController()
-    return HFController(model_path=model_path, adapter_path=adapter_path, device=device, dtype=dtype)
+    return HFController(
+        model_path=model_path,
+        adapter_path=adapter_path,
+        device=device,
+        dtype=dtype,
+        require_gpu=require_gpu,
+        allow_large_model=allow_large_model,
+        max_model_params_millions=max_model_params_millions,
+    )
