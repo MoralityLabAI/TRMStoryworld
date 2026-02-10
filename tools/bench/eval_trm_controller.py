@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
 
+from identity_utils import git_commit, make_run_identity, sha256_hex, stable_json
 from model_utils import controller_from_args, parse_pick, parse_target_pick
 
 
@@ -32,6 +33,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dtype", type=str, default="auto", choices=["auto", "float16", "bfloat16", "float32"])
     parser.add_argument("--max-new-tokens", type=int, default=8)
     parser.add_argument("--out", type=str, default="tools/bench/out/eval_summary.json")
+    parser.add_argument("--swmd-hash", type=str, default="")
+    parser.add_argument("--builder-git-commit", type=str, default="")
     return parser.parse_args()
 
 
@@ -54,12 +57,20 @@ def main() -> int:
     invalid = 0
     token_sum = 0
     samples: List[Dict[str, Any]] = []
+    canon_rows: List[str] = []
+    leaf_hashes: List[str] = []
     for idx, row in enumerate(iter_jsonl(dataset)):
         prompt = row.get("input")
         target = row.get("target")
         if not isinstance(prompt, str) or not isinstance(target, str):
             continue
         total += 1
+        canon_rows.append(stable_json(row))
+        leaf_hashes.append(
+            sha256_hex(
+                f"SFT1|{idx}|{sha256_hex(str(prompt))}|{sha256_hex(str(target))}"
+            )
+        )
         truth = parse_target_pick(target)
         pred = controller.predict(prompt, max_new_tokens=args.max_new_tokens)
         token_sum += pred.tokens
@@ -81,6 +92,31 @@ def main() -> int:
                 }
             )
 
+    dataset_canon = "\n".join(canon_rows) + ("\n" if canon_rows else "")
+    dataset_hash = sha256_hex(dataset_canon)
+    if leaf_hashes:
+        import hashlib
+
+        level = [bytes.fromhex(x) for x in leaf_hashes]
+        while len(level) > 1:
+            if len(level) % 2 == 1:
+                level.append(level[-1])
+            nxt = []
+            for i in range(0, len(level), 2):
+                nxt.append(hashlib.sha256(level[i] + level[i + 1]).digest())
+            level = nxt
+        rows_merkle_root = level[0].hex()
+    else:
+        rows_merkle_root = sha256_hex("EMPTY")
+
+    repo_root = Path(__file__).resolve().parents[2]
+    base_model_id = args.model_path or "heuristic"
+    adapter_cfg = {
+        "adapter_path": args.adapter_path or "",
+        "dtype": args.dtype,
+        "device": args.device,
+        "max_new_tokens": args.max_new_tokens,
+    }
     summary = {
         "dataset": str(dataset),
         "rows_evaluated": total,
@@ -92,6 +128,15 @@ def main() -> int:
         "adapter_path": args.adapter_path or "",
         "samples": samples,
     }
+    summary["run_identity"] = make_run_identity(
+        swmd_hash=args.swmd_hash,
+        dataset_hash=dataset_hash,
+        rows_merkle_root=rows_merkle_root,
+        builder_git_commit=args.builder_git_commit,
+        trainer_git_commit=git_commit(repo_root),
+        base_model_id=base_model_id,
+        adapter_config=adapter_cfg,
+    )
     out_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))
     return 0

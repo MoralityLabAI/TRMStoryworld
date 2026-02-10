@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from identity_utils import git_commit, make_run_identity, sha256_hex as h_hex
 from model_utils import controller_from_args, parse_pick
 from swmd_utils import SwmdEncounter, SwmdOption, merkle_root_hex, parse_swmd, sha256_hex, stable_json
 
@@ -111,6 +112,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", type=str, default="cpu")
     parser.add_argument("--dtype", type=str, default="auto", choices=["auto", "float16", "bfloat16", "float32"])
     parser.add_argument("--out-dir", type=str, default="tools/bench/out")
+    parser.add_argument("--dataset-hash", type=str, default="")
+    parser.add_argument("--rows-merkle-root", type=str, default="")
+    parser.add_argument("--builder-git-commit", type=str, default="")
     return parser.parse_args()
 
 
@@ -194,6 +198,23 @@ def main() -> int:
             "adapter_episodes": str(adapter_ep_path),
         },
     }
+    repo_root = Path(__file__).resolve().parents[2]
+    summary["run_identity"] = make_run_identity(
+        swmd_hash=world.hash_sha256,
+        dataset_hash=args.dataset_hash,
+        rows_merkle_root=args.rows_merkle_root,
+        builder_git_commit=args.builder_git_commit,
+        trainer_git_commit=git_commit(repo_root),
+        base_model_id=args.base_model or "heuristic",
+        adapter_config={
+            "adapter_path": args.adapter_path or "",
+            "dtype": args.dtype,
+            "device": args.device,
+            "episodes": args.episodes,
+            "max_steps": args.max_steps,
+        },
+    )
+    summary["run_identity_hash"] = h_hex(stable_json(summary["run_identity"]))
     summary_path = out_dir / "rollout_eval_summary.json"
     summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))

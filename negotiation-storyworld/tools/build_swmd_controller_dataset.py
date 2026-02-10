@@ -271,6 +271,21 @@ def main() -> int:
         "k_budget_counts": {"k1": k1_count, "k2": k2_count},
         "out": str(out_path),
     }
+    run_identity = {
+        "schema_version": 1,
+        "swmd_hash": swmd_hash,
+        "dataset_hash": dataset_hash,
+        "rows_merkle_root": rows_merkle_root,
+        "builder_git_commit": summary["builder_git_commit"],
+        "trainer_git_commit": "",
+        "base_model_id": "",
+        "adapter_config_hash": hashlib.sha256(stable_json({}).encode("utf-8")).hexdigest(),
+        "adapter_config": {},
+        "python_version": platform.python_version(),
+        "normalized_bytes_spec": "stable_json(sort_keys=True,separators=',:') + LF",
+    }
+    summary["run_identity"] = run_identity
+    summary["run_identity_hash"] = hashlib.sha256(stable_json(run_identity).encode("utf-8")).hexdigest()
     summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))
     return 0

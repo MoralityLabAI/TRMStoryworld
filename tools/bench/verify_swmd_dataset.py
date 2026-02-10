@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
 
+from identity_utils import git_commit, make_run_identity
 from swmd_utils import canonical_swmd_hash, merkle_root_hex, sha256_hex, stable_json
 
 
@@ -80,6 +81,16 @@ def main() -> int:
         "rows": len(rows),
         "checks": checks,
     }
+    repo_root = Path(__file__).resolve().parents[2]
+    result["run_identity"] = make_run_identity(
+        swmd_hash=swmd_hash,
+        dataset_hash=dataset_hash,
+        rows_merkle_root=rows_merkle_root,
+        builder_git_commit="",
+        trainer_git_commit=git_commit(repo_root),
+        base_model_id="",
+        adapter_config={},
+    )
     out_path.write_text(json.dumps(result, indent=2), encoding="utf-8")
     print(json.dumps(result, indent=2))
     return 0 if ok else 2
