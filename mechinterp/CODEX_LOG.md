@@ -12,3 +12,10 @@
 - Added executable 	rminterp CLI wrapper with subcommands: 	race, sae fit, and intervene.
 - Added smoke pipeline test 	ests/test_trminterp_cli.py and validated end-to-end artifact contract outputs (	race.jsonl, sae.pt, sae_metrics.json, eport.json, intervention_diffs.json).
 
+## 2026-02-10 Turn 4
+- Patched 
+egotiation-storyworld/tools/trm_trace_benchmark.py to thread deterministic recurrent latent state through rollout decisions and emit --latent-trace-out JSONL.
+- Added --latent-dim and --latent-weight knobs; with nonzero weight, latent norm contributes a deterministic bonus to candidate ranking.
+- Smoke-validated on 
+egotiation-storyworld/examples/diplomacy_min.json and confirmed trace, latent trace, and summary outputs.
+

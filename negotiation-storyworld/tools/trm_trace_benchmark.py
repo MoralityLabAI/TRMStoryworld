@@ -12,6 +12,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+import numpy as np
+
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -138,6 +140,81 @@ class CandidateEval:
     trust_inbound: int
     coalition_count: int
     coalition_stability: int
+    latent_bonus: int
+    latent_norm: float
+    h_after: List[float]
+
+
+def _action_type_id(action_type: str) -> int:
+    order = {"wait": 0, "propose": 1, "ally": 2, "betray": 3}
+    return int(order.get(action_type, 0))
+
+
+def _target_bucket(world: Dict[str, Any], action: Dict[str, Any]) -> float:
+    target = action.get("target")
+    if not target:
+        return 0.0
+    targets = sorted([agent.get("id") for agent in world.get("agents", []) if agent.get("id")])
+    if not targets:
+        return 0.0
+    idx = targets.index(target) if target in targets else 0
+    return float(idx + 1) / float(max(1, len(targets)))
+
+
+def _outcome_code(outcome: str) -> float:
+    code = {"none": 0.0, "coalition": 0.33, "standoff": 0.66, "betrayal": 1.0}
+    return float(code.get(outcome, 0.0))
+
+
+def latent_features(
+    world: Dict[str, Any],
+    nmap: Dict[str, Dict[str, Any]],
+    state: Dict[str, Any],
+    focal_agent: str,
+    action: Dict[str, Any],
+    event: Dict[str, Any],
+) -> np.ndarray:
+    node = nmap.get(state.get("active_node"), {})
+    turn = float(int(state.get("turn", 0)))
+    tension = float(node.get("state_vars", {}).get("tension", 0.0))
+    beliefs = state.get("beliefs", {})
+    trust_inbound = 0.0
+    for aid, belief in beliefs.items():
+        if aid == focal_agent:
+            continue
+        trust_inbound += float(belief.get("trust", {}).get(focal_agent, 0.0))
+    metrics = event.get("metrics", {})
+    coalition_count = float(metrics.get("coalition_count") or 0.0)
+    coalition_stability = float(metrics.get("coalition_mean_stability") or 0.0)
+    action_type = float(_action_type_id(str(action.get("type", "wait")))) / 3.0
+    target_bucket = _target_bucket(world, action)
+    outcome_val = _outcome_code(str(event.get("outcome", "none")))
+    vec = np.asarray(
+        [
+            turn / 10.0,
+            tension,
+            trust_inbound / 4.0,
+            coalition_count / 4.0,
+            coalition_stability,
+            action_type,
+            target_bucket,
+            outcome_val,
+        ],
+        dtype=np.float32,
+    )
+    return vec
+
+
+def latent_update(prev_h: np.ndarray, feat: np.ndarray) -> np.ndarray:
+    dim = int(prev_h.shape[0])
+    out = np.zeros((dim,), dtype=np.float32)
+    for i in range(dim):
+        base = float(prev_h[i])
+        s1 = float(feat[i % feat.shape[0]])
+        s2 = float(feat[(i * 3 + 1) % feat.shape[0]])
+        bias = 0.1 * float(i + 1) / float(max(1, dim))
+        out[i] = np.tanh(0.72 * base + 0.55 * s1 + 0.25 * s2 + bias)
+    return out
 
 
 def score_event(
@@ -214,6 +291,8 @@ def run_episode(
     max_steps: int,
     episode_idx: int,
     opponent_policy: str,
+    latent_dim: int,
+    latent_weight: float,
 ) -> Dict[str, Any]:
     env = DiplomacyStoryworldEnv(world, seed=env_seed, log_path=None)
     state = env.reset(seed=env_seed)
@@ -221,6 +300,8 @@ def run_episode(
     choices = build_choice_actions(targets)
     leaf_hashes: List[str] = []
     steps: List[Dict[str, Any]] = []
+    latent_steps: List[Dict[str, Any]] = []
+    h = np.zeros((int(max(1, latent_dim)),), dtype=np.float32)
     for step_idx in range(max_steps):
         prompt = world_step_prompt(world, nmap, state, focal_agent, choices)
         state_hash = h_hex(stable_json(state))
@@ -236,16 +317,23 @@ def run_episode(
                 turn=int(state.get("turn", 0)),
             )
             score, components = score_event(sim_state, sim_event, focal_agent, action)
+            feat = latent_features(world, nmap, state, focal_agent, action, sim_event)
+            h_after = latent_update(h, feat)
+            latent_norm = float(np.linalg.norm(h_after))
+            latent_bonus = int(round(float(latent_weight) * latent_norm * 1000.0))
             candidates.append(
                 CandidateEval(
                     pick_idx=pick_idx,
                     action=action,
-                    score=score,
+                    score=score + latent_bonus,
                     outcome=str(sim_event.get("outcome")),
                     metrics=sim_event.get("metrics", {}),
                     trust_inbound=components["trust_inbound"],
                     coalition_count=components["coalition_count"],
                     coalition_stability=components["coalition_stability"],
+                    latent_bonus=latent_bonus,
+                    latent_norm=latent_norm,
+                    h_after=h_after.astype(np.float32).tolist(),
                 )
             )
 
@@ -271,6 +359,9 @@ def run_episode(
                 )
 
         next_state, event, done = env.step(live_actions, [])
+        feat_live = latent_features(world, nmap, state, focal_agent, best.action, event)
+        h_before = h.copy()
+        h = latent_update(h, feat_live)
         out_hash = h_hex(stable_json(event.get("outcome")))
         leaf = mk_leaf(episode_idx, int(state.get("turn", 0)), state_hash, best.pick_idx, k_budget, out_hash)
         leaf_hashes.append(leaf)
@@ -294,6 +385,8 @@ def run_episode(
                     "pick": c.pick_idx,
                     "action": action_to_label(c.action),
                     "score": c.score,
+                    "latent_bonus": c.latent_bonus,
+                    "latent_norm": c.latent_norm,
                     "outcome": c.outcome,
                     "trust_inbound": c.trust_inbound,
                     "coalition_count": c.coalition_count,
@@ -344,7 +437,33 @@ def run_episode(
                 "negotiation_diary": negotiation_diary,
                 "recommendations": recommendations,
                 "opponent_policy": opponent_policy,
+                "latent": {
+                    "h_before": h_before.astype(np.float32).tolist(),
+                    "h_after": h.astype(np.float32).tolist(),
+                    "latent_bonus": int(best.latent_bonus),
+                    "latent_norm": float(np.linalg.norm(h)),
+                },
                 "event": event,
+            }
+        )
+        latent_steps.append(
+            {
+                "episode": episode_idx,
+                "turn": int(state.get("turn", 0)),
+                "t": step_idx,
+                "h": h.astype(np.float32).tolist(),
+                "aux": {
+                    "h_before": h_before.astype(np.float32).tolist(),
+                    "features": feat_live.astype(np.float32).tolist(),
+                    "latent_bonus": int(best.latent_bonus),
+                    "policy_weight": float(latent_weight),
+                },
+                "y": float(best.score),
+                "metrics": {
+                    "pick_idx": int(best.pick_idx),
+                    "action": action_to_label(best.action),
+                    "state_hash": state_hash,
+                },
             }
         )
         state = next_state
@@ -365,6 +484,7 @@ def run_episode(
             )
         ),
         "steps": steps,
+        "latent_steps": latent_steps,
         "done": bool(state.get("done")),
         "final_outcome": steps[-1]["event"].get("outcome") if steps else None,
     }
@@ -415,7 +535,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--opponent-policy", choices=["wait", "ally-first", "mixed"], default="wait")
     parser.add_argument("--trace-out", type=str, default="logs/trm_sw1_traces.jsonl")
     parser.add_argument("--episode-out", type=str, default="logs/trm_sw1_episodes.jsonl")
+    parser.add_argument("--latent-trace-out", type=str, default="logs/trm_sw1_latent_traces.jsonl")
     parser.add_argument("--summary-out", type=str, default="logs/trm_sw1_summary.json")
+    parser.add_argument("--latent-dim", type=int, default=16)
+    parser.add_argument("--latent-weight", type=float, default=0.0)
     return parser.parse_args()
 
 
@@ -455,6 +578,7 @@ def main() -> int:
     nmap = node_map(world)
     episodes = []
     trace_rows = []
+    latent_trace_rows = []
     for idx in range(args.episodes):
         ep_seed = args.seed + idx
         ep = run_episode(
@@ -465,18 +589,27 @@ def main() -> int:
             max_steps=args.max_steps,
             episode_idx=idx,
             opponent_policy=args.opponent_policy,
+            latent_dim=args.latent_dim,
+            latent_weight=args.latent_weight,
         )
         episodes.append(ep)
         for step in ep["steps"]:
             trace_rows.append(step)
+        for step in ep["latent_steps"]:
+            latent_trace_rows.append(step)
 
     trace_out = Path(args.trace_out)
     episode_out = Path(args.episode_out)
+    latent_trace_out = Path(args.latent_trace_out)
     summary_out = Path(args.summary_out)
     write_jsonl(trace_out, trace_rows)
+    write_jsonl(latent_trace_out, latent_trace_rows)
     write_jsonl(episode_out, [{"episode": ep["episode"], "trace_root": ep["trace_root"], "output_commitment": ep["output_commitment"], "done": ep["done"], "final_outcome": ep["final_outcome"]} for ep in episodes])
 
     summary = summarize(episodes)
+    summary["latent_trace_out"] = str(latent_trace_out)
+    summary["latent_dim"] = int(args.latent_dim)
+    summary["latent_weight"] = float(args.latent_weight)
     summary_out.parent.mkdir(parents=True, exist_ok=True)
     summary_out.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))
