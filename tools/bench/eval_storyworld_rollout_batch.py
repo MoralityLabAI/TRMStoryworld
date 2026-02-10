@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 import time
 from pathlib import Path
@@ -63,13 +64,6 @@ def main() -> int:
     if need_adapter and not args.adapter_path:
         raise ValueError("--adapter-path required in adapter mode")
 
-    base_controller = None
-    adapter_controller = None
-    if need_base:
-        base_controller = controller_from_args(args.base_model or None, None, args.device, args.dtype)
-    if need_adapter:
-        adapter_controller = controller_from_args(args.base_model or None, args.adapter_path or None, args.device, args.dtype)
-
     batch_rows: List[Dict[str, Any]] = []
     for idx, swmd in enumerate(files):
         world = parse_swmd(swmd)
@@ -98,8 +92,32 @@ def main() -> int:
         base_trace_rows = 0
         adapter_trace_rows = 0
         last_hb = 0.0
-        for ep in range(args.episodes):
-            if need_base and base_controller is not None:
+        def maybe_heartbeat(mode: str, episode_idx: int) -> None:
+            nonlocal last_hb
+            now = time.time()
+            if args.heartbeat_seconds <= 0 or now - last_hb < args.heartbeat_seconds:
+                return
+            mem = memory_snapshot()
+            print(
+                "[heartbeat] "
+                f"mode={mode} "
+                f"world={idx + 1}/{len(files)} "
+                f"episode={episode_idx + 1}/{args.episodes} "
+                f"rss_mb={mem['rss_mb']:.1f} "
+                f"cuda_allocated_mb={mem['cuda_allocated_mb']:.1f} "
+                f"cuda_reserved_mb={mem['cuda_reserved_mb']:.1f} "
+                f"base_trace_rows={base_trace_rows} "
+                f"adapter_trace_rows={adapter_trace_rows}"
+            )
+            last_hb = now
+
+        def enforce_rss_cap() -> None:
+            if args.max_rss_mb > 0 and _rss_mb() > args.max_rss_mb:
+                raise SystemExit(f"rss limit exceeded: {_rss_mb():.1f}MB > {args.max_rss_mb}MB")
+
+        if need_base:
+            base_controller = controller_from_args(args.base_model or None, None, args.device, args.dtype)
+            for ep in range(args.episodes):
                 b_steps: List[Dict[str, Any]] = []
                 b = run_episode(
                     "base",
@@ -117,7 +135,21 @@ def main() -> int:
                 append_jsonl(base_ep_path, [b])
                 base_trace_rows += step_count
                 base_eps.append(b)
-            if need_adapter and adapter_controller is not None:
+                maybe_heartbeat("base", ep)
+                enforce_rss_cap()
+            del base_controller
+            gc.collect()
+            try:
+                import torch
+
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+            except Exception:
+                pass
+
+        if need_adapter:
+            adapter_controller = controller_from_args(args.base_model or None, args.adapter_path or None, args.device, args.dtype)
+            for ep in range(args.episodes):
                 a_steps: List[Dict[str, Any]] = []
                 a = run_episode(
                     "adapter",
@@ -135,22 +167,17 @@ def main() -> int:
                 append_jsonl(adapter_ep_path, [a])
                 adapter_trace_rows += step_count
                 adapter_eps.append(a)
-            now = time.time()
-            if args.heartbeat_seconds > 0 and now - last_hb >= args.heartbeat_seconds:
-                mem = memory_snapshot()
-                print(
-                    "[heartbeat] "
-                    f"world={idx + 1}/{len(files)} "
-                    f"episode={ep + 1}/{args.episodes} "
-                    f"rss_mb={mem['rss_mb']:.1f} "
-                    f"cuda_allocated_mb={mem['cuda_allocated_mb']:.1f} "
-                    f"cuda_reserved_mb={mem['cuda_reserved_mb']:.1f} "
-                    f"base_trace_rows={base_trace_rows} "
-                    f"adapter_trace_rows={adapter_trace_rows}"
-                )
-                last_hb = now
-            if args.max_rss_mb > 0 and _rss_mb() > args.max_rss_mb:
-                raise SystemExit(f"rss limit exceeded: {_rss_mb():.1f}MB > {args.max_rss_mb}MB")
+                maybe_heartbeat("adapter", ep)
+                enforce_rss_cap()
+            del adapter_controller
+            gc.collect()
+            try:
+                import torch
+
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+            except Exception:
+                pass
 
         summary: Dict[str, Any] = {
             "mission": "swmd-rollout-eval",
