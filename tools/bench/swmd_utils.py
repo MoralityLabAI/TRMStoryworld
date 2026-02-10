@@ -139,7 +139,7 @@ def _parse_swmd_min(text: str) -> SwmdWorld:
             reaction = SwmdReaction(
                 rxn_id=rxn_id,
                 consequence=consequence,
-                text=payload.get("O", ""),
+                text=payload.get("R", ""),
                 effects=[x.strip() for x in payload.get("E", "").split(";") if x.strip()],
                 desirability=payload.get("D", "C(0)"),
             )

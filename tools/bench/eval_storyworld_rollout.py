@@ -108,7 +108,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-steps", type=int, default=8)
     parser.add_argument("--base-model", type=str, default="")
     parser.add_argument("--adapter-path", type=str, default="")
-    parser.add_argument("--device", type=str, default="auto")
+    parser.add_argument("--device", type=str, default="cpu")
     parser.add_argument("--dtype", type=str, default="auto", choices=["auto", "float16", "bfloat16", "float32"])
     parser.add_argument("--out-dir", type=str, default="tools/bench/out")
     return parser.parse_args()

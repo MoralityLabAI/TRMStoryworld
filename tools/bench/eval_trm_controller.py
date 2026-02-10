@@ -28,7 +28,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dataset", type=str, required=True, help="SFT JSONL with input/target.")
     parser.add_argument("--model-path", type=str, default="", help="HF base model path. Empty => heuristic.")
     parser.add_argument("--adapter-path", type=str, default="", help="Optional PEFT adapter path.")
-    parser.add_argument("--device", type=str, default="auto", help='Transformers device_map, e.g. "auto" or "cpu".')
+    parser.add_argument("--device", type=str, default="cpu", help='Transformers device_map, e.g. "auto" or "cpu".')
     parser.add_argument("--dtype", type=str, default="auto", choices=["auto", "float16", "bfloat16", "float32"])
     parser.add_argument("--max-new-tokens", type=int, default=8)
     parser.add_argument("--out", type=str, default="tools/bench/out/eval_summary.json")
