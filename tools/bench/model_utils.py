@@ -5,7 +5,8 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Optional, Tuple
+from pathlib import Path
+from typing import Any, Dict, Optional
 
 CHOICE_RE = re.compile(r"^C(\d+)\s+", re.MULTILINE)
 PICK_RE = re.compile(r"PICK\s+(\d+)", re.IGNORECASE)
@@ -42,8 +43,18 @@ class HFController:
         model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch_dtype, device_map=device)
         if adapter_path:
             from peft import PeftModel
-
-            model = PeftModel.from_pretrained(model, adapter_path)
+            offload_dir = Path(__file__).resolve().parent / "out" / "offload"
+            offload_dir.mkdir(parents=True, exist_ok=True)
+            # Some PEFT/transformers combinations fail when applying adapter weights with offload metadata.
+            # Retry without offload so eval-only rollouts remain usable on local setups.
+            try:
+                model = PeftModel.from_pretrained(model, adapter_path, offload_folder=str(offload_dir))
+            except KeyError:
+                model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch_dtype, device_map="cpu")
+                model = PeftModel.from_pretrained(model, adapter_path)
+        model.eval()
+        for param in model.parameters():
+            param.requires_grad_(False)
         self.tokenizer = tok
         self.model = model
 
@@ -53,21 +64,54 @@ class HFController:
         tokenizer = self.tokenizer
         model = self.model
         inputs = tokenizer(prompt, return_tensors="pt")
-        inputs = {k: v.to(model.device) for k, v in inputs.items()}
-        with torch.no_grad():
+        model_device = getattr(model, "device", None)
+        if model_device is not None and str(model_device) != "meta":
+            inputs = {k: v.to(model_device) for k, v in inputs.items()}
+        with torch.inference_mode():
             out = model.generate(
                 **inputs,
                 max_new_tokens=max_new_tokens,
                 do_sample=False,
                 temperature=0.0,
                 top_p=1.0,
+                use_cache=False,
                 eos_token_id=tokenizer.eos_token_id,
                 pad_token_id=tokenizer.eos_token_id,
             )
         gen = out[0][inputs["input_ids"].shape[1] :]
-        text = tokenizer.decode(gen, skip_special_tokens=True).strip()
-        tokens = int(gen.numel())
+        gen_cpu = gen.detach().to("cpu")
+        text = tokenizer.decode(gen_cpu, skip_special_tokens=True).strip()
+        tokens = int(gen_cpu.numel())
+        del gen_cpu
+        del gen
+        del out
+        del inputs
         return ModelResult(text=text, tokens=tokens)
+
+
+def memory_snapshot() -> Dict[str, Any]:
+    snapshot: Dict[str, Any] = {
+        "rss_mb": -1.0,
+        "cuda_allocated_mb": 0.0,
+        "cuda_reserved_mb": 0.0,
+        "cuda_available": False,
+    }
+    try:
+        import psutil
+
+        snapshot["rss_mb"] = psutil.Process().memory_info().rss / (1024 * 1024)
+    except Exception:
+        pass
+    try:
+        import torch
+
+        snapshot["cuda_available"] = bool(torch.cuda.is_available())
+        if snapshot["cuda_available"]:
+            snapshot["cuda_allocated_mb"] = torch.cuda.memory_allocated() / (1024 * 1024)
+            snapshot["cuda_reserved_mb"] = torch.cuda.memory_reserved() / (1024 * 1024)
+    except Exception:
+        pass
+    return snapshot
 
 
 def parse_pick(text: str) -> Optional[int]:

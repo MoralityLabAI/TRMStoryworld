@@ -5,11 +5,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional
 
 from identity_utils import git_commit, make_run_identity, sha256_hex as h_hex
-from model_utils import controller_from_args, parse_pick
+from model_utils import controller_from_args, memory_snapshot, parse_pick
 from swmd_utils import SwmdEncounter, SwmdOption, merkle_root_hex, parse_swmd, sha256_hex, stable_json
 
 
@@ -42,10 +43,16 @@ def run_episode(
     controller,
     episode_idx: int,
     max_steps: int,
+    include_prompt_in_trace: bool = False,
+    include_steps_in_episode: bool = False,
+    emit_step: Optional[Callable[[Dict[str, Any]], None]] = None,
 ) -> Dict[str, Any]:
     cur = start_id
     leaves: List[str] = []
-    steps: List[Dict[str, Any]] = []
+    labels: List[str] = []
+    episode_steps: List[Dict[str, Any]] = []
+    final_node = start_id
+    step_count = 0
     for turn in range(max_steps):
         enc = encounters.get(cur)
         if enc is None:
@@ -64,19 +71,26 @@ def run_episode(
         out_hash = sha256_hex(stable_json({"next": next_id or "END"}))
         leaf = mk_leaf(mode, episode_idx, turn, state_hash, pick, out_hash)
         leaves.append(leaf)
-        steps.append(
-            {
-                "episode": episode_idx,
-                "turn": turn,
-                "mode": mode,
-                "encounter_id": enc.enc_id,
-                "prompt": prompt,
-                "label": f"PICK {pick}",
-                "state_hash": state_hash,
-                "receipt_leaf": leaf,
-                "next_encounter": next_id,
-            }
-        )
+        label = f"PICK {pick}"
+        labels.append(label)
+        step_row: Dict[str, Any] = {
+            "episode": episode_idx,
+            "turn": turn,
+            "mode": mode,
+            "encounter_id": enc.enc_id,
+            "label": label,
+            "state_hash": state_hash,
+            "receipt_leaf": leaf,
+            "next_encounter": next_id,
+        }
+        if include_prompt_in_trace:
+            step_row["prompt"] = prompt
+        if emit_step is not None:
+            emit_step(step_row)
+        if include_steps_in_episode:
+            episode_steps.append(step_row)
+        step_count += 1
+        final_node = next_id or final_node
         if not next_id:
             break
         cur = next_id
@@ -87,8 +101,8 @@ def run_episode(
                 "episode": episode_idx,
                 "mode": mode,
                 "trace_root": trace_root,
-                "labels": [s["label"] for s in steps],
-                "final_node": (steps[-1]["next_encounter"] if steps else start_id),
+                "labels": labels,
+                "final_node": final_node,
             }
         )
     )
@@ -97,8 +111,9 @@ def run_episode(
         "mode": mode,
         "trace_root": trace_root,
         "output_commitment": output_commitment,
-        "steps": steps,
-        "final_node": (steps[-1]["next_encounter"] if steps else start_id),
+        "steps": episode_steps if include_steps_in_episode else [],
+        "step_count": step_count,
+        "final_node": final_node,
     }
 
 
@@ -115,6 +130,29 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dataset-hash", type=str, default="")
     parser.add_argument("--rows-merkle-root", type=str, default="")
     parser.add_argument("--builder-git-commit", type=str, default="")
+    parser.add_argument(
+        "--run-modes",
+        type=str,
+        default="both",
+        choices=["both", "adapter-only", "base-only"],
+        help="Select which controllers to evaluate. adapter-only avoids loading a second model.",
+    )
+    parser.add_argument(
+        "--heartbeat-seconds",
+        type=int,
+        default=30,
+        help="Emit periodic progress lines with episode index and RSS memory.",
+    )
+    parser.add_argument(
+        "--include-prompt-in-trace",
+        action="store_true",
+        help="Store full prompt text in trace rows (disabled by default to reduce memory/disk pressure).",
+    )
+    parser.add_argument(
+        "--include-steps-in-episodes",
+        action="store_true",
+        help="Store per-step arrays inside episode rows (disabled by default to avoid duplicate payloads).",
+    )
     return parser.parse_args()
 
 
@@ -125,11 +163,20 @@ def write_jsonl(path: Path, rows: List[Dict[str, Any]]) -> None:
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+def append_jsonl(path: Path, rows: List[Dict[str, Any]]) -> None:
+    if not rows:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+
 def summarize(episodes: List[Dict[str, Any]]) -> Dict[str, Any]:
     outcomes: Dict[str, int] = {}
     total_steps = 0
     for ep in episodes:
-        total_steps += len(ep.get("steps", []))
+        total_steps += int(ep.get("step_count", len(ep.get("steps", []))))
         final_node = ep.get("final_node") or "none"
         outcomes[final_node] = outcomes.get(final_node, 0) + 1
     return {
@@ -150,52 +197,120 @@ def main() -> int:
         raise ValueError("no encounters found in SWMD")
     start_id = sorted(world.encounters, key=lambda e: (e.turn_span, e.enc_id))[0].enc_id
 
-    base_controller = controller_from_args(
-        model_path=(args.base_model or None),
-        adapter_path=None,
-        device=args.device,
-        dtype=args.dtype,
-    )
-    adapter_controller = controller_from_args(
-        model_path=(args.base_model or None),
-        adapter_path=(args.adapter_path or None),
-        device=args.device,
-        dtype=args.dtype,
-    )
+    need_base = args.run_modes in ("both", "base-only")
+    need_adapter = args.run_modes in ("both", "adapter-only")
 
-    base_eps: List[Dict[str, Any]] = []
-    adapter_eps: List[Dict[str, Any]] = []
-    base_steps: List[Dict[str, Any]] = []
-    adapter_steps: List[Dict[str, Any]] = []
-    for i in range(args.episodes):
-        b = run_episode("base", encounters, start_id, base_controller, i, args.max_steps)
-        a = run_episode("adapter", encounters, start_id, adapter_controller, i, args.max_steps)
-        base_eps.append(b)
-        adapter_eps.append(a)
-        base_steps.extend(b["steps"])
-        adapter_steps.extend(a["steps"])
+    if need_adapter and not args.base_model:
+        raise ValueError("--base-model is required when run mode includes adapter")
+    if need_adapter and not args.adapter_path:
+        raise ValueError("--adapter-path is required in adapter-only/both modes")
+
+    base_controller = None
+    adapter_controller = None
+    if need_base:
+        base_controller = controller_from_args(
+            model_path=(args.base_model or None),
+            adapter_path=None,
+            device=args.device,
+            dtype=args.dtype,
+        )
+    if need_adapter:
+        adapter_controller = controller_from_args(
+            model_path=(args.base_model or None),
+            adapter_path=(args.adapter_path or None),
+            device=args.device,
+            dtype=args.dtype,
+        )
 
     base_trace_path = out_dir / "rollout_base_traces.jsonl"
     adapter_trace_path = out_dir / "rollout_adapter_traces.jsonl"
     base_ep_path = out_dir / "rollout_base_episodes.jsonl"
     adapter_ep_path = out_dir / "rollout_adapter_episodes.jsonl"
-    write_jsonl(base_trace_path, base_steps)
-    write_jsonl(adapter_trace_path, adapter_steps)
-    write_jsonl(base_ep_path, base_eps)
-    write_jsonl(adapter_ep_path, adapter_eps)
+    if need_base:
+        write_jsonl(base_trace_path, [])
+        write_jsonl(base_ep_path, [])
+    if need_adapter:
+        write_jsonl(adapter_trace_path, [])
+        write_jsonl(adapter_ep_path, [])
+
+    base_eps: List[Dict[str, Any]] = []
+    adapter_eps: List[Dict[str, Any]] = []
+    base_trace_rows = 0
+    adapter_trace_rows = 0
+    last_hb = 0.0
+    for i in range(args.episodes):
+        if need_base and base_controller is not None:
+            b_steps: List[Dict[str, Any]] = []
+            b = run_episode(
+                "base",
+                encounters,
+                start_id,
+                base_controller,
+                i,
+                args.max_steps,
+                include_prompt_in_trace=args.include_prompt_in_trace,
+                include_steps_in_episode=args.include_steps_in_episodes,
+                emit_step=b_steps.append,
+            )
+            step_count = int(b["step_count"])
+            append_jsonl(base_trace_path, b_steps)
+            append_jsonl(base_ep_path, [b])
+            base_trace_rows += step_count
+            base_eps.append(b)
+        if need_adapter and adapter_controller is not None:
+            a_steps: List[Dict[str, Any]] = []
+            a = run_episode(
+                "adapter",
+                encounters,
+                start_id,
+                adapter_controller,
+                i,
+                args.max_steps,
+                include_prompt_in_trace=args.include_prompt_in_trace,
+                include_steps_in_episode=args.include_steps_in_episodes,
+                emit_step=a_steps.append,
+            )
+            step_count = int(a["step_count"])
+            append_jsonl(adapter_trace_path, a_steps)
+            append_jsonl(adapter_ep_path, [a])
+            adapter_trace_rows += step_count
+            adapter_eps.append(a)
+        now = time.time()
+        if args.heartbeat_seconds > 0 and (now - last_hb) >= args.heartbeat_seconds:
+            mem = memory_snapshot()
+            print(
+                "[heartbeat] "
+                f"episode={i + 1}/{args.episodes} "
+                f"rss_mb={mem['rss_mb']:.1f} "
+                f"cuda_allocated_mb={mem['cuda_allocated_mb']:.1f} "
+                f"cuda_reserved_mb={mem['cuda_reserved_mb']:.1f} "
+                f"base_trace_rows={base_trace_rows} "
+                f"adapter_trace_rows={adapter_trace_rows}"
+            )
+            last_hb = now
 
     summary = {
         "mission": "swmd-rollout-eval",
         "target": args.swmd,
         "swmd_hash": world.hash_sha256,
         "result": "ok",
-        "base": summarize(base_eps),
-        "adapter": summarize(adapter_eps),
+        "base": summarize(base_eps) if need_base else None,
+        "adapter": summarize(adapter_eps) if need_adapter else None,
+        "run_modes": args.run_modes,
+        "runtime": {
+            **memory_snapshot(),
+            "base_trace_rows": base_trace_rows,
+            "adapter_trace_rows": adapter_trace_rows,
+            "episodes": args.episodes,
+            "max_steps": args.max_steps,
+            "include_prompt_in_trace": bool(args.include_prompt_in_trace),
+            "include_steps_in_episodes": bool(args.include_steps_in_episodes),
+        },
         "evidence_paths": {
-            "base_trace": str(base_trace_path),
-            "adapter_trace": str(adapter_trace_path),
-            "base_episodes": str(base_ep_path),
-            "adapter_episodes": str(adapter_ep_path),
+            "base_trace": str(base_trace_path) if need_base else "",
+            "adapter_trace": str(adapter_trace_path) if need_adapter else "",
+            "base_episodes": str(base_ep_path) if need_base else "",
+            "adapter_episodes": str(adapter_ep_path) if need_adapter else "",
         },
     }
     repo_root = Path(__file__).resolve().parents[2]
