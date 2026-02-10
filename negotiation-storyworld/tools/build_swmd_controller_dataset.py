@@ -170,12 +170,25 @@ def fmt_signed(x: float) -> str:
 
 
 def build_prompt(enc: Encounter, ranked: List[Tuple[str, OptionBucket, float, float, float, List[str]]]) -> str:
+    # Drop fields that are constant at display precision within the encounter.
+    t_vals = [fmt_signed(r[2]) for r in ranked]
+    h_vals = [fmt_signed(r[3]) for r in ranked]
+    d_vals = [f"{r[4]:.3f}" for r in ranked]
+    keep_t = len(set(t_vals)) > 1
+    keep_h = len(set(h_vals)) > 1
+    keep_d = len(set(d_vals)) > 1
+
     lines = ["<SWMD-CTRL>", f"E {enc.enc_id} turn={enc.turn_span}"]
     for idx, (_opt_id, bucket, trust, threat, dscore, next_nodes) in enumerate(ranked):
         nxt = ",".join(next_nodes) if next_nodes else "none"
-        lines.append(
-            f"C{idx} {bucket.opt_id} -> {nxt} | O:{bucket.text} | DT:{fmt_signed(trust)} | DH:{fmt_signed(threat)} | D0:{dscore:.3f}"
-        )
+        parts = [f"C{idx} {bucket.opt_id} -> {nxt}", f"O:{bucket.text}"]
+        if keep_t:
+            parts.append(f"DT:{fmt_signed(trust)}")
+        if keep_h:
+            parts.append(f"DH:{fmt_signed(threat)}")
+        if keep_d:
+            parts.append(f"D0:{dscore:.3f}")
+        lines.append(" | ".join(parts))
     lines.append("</SWMD-CTRL>")
     return "\n".join(lines)
 
