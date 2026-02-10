@@ -1,0 +1,298 @@
+﻿{
+    "mission":  "TRM harness SWMD min batch (SAEv1)",
+    "generated_at":  "2026-02-10T20:00:44",
+    "harness":  "negotiation-storyworld/tools/trm_trace_benchmark.py",
+    "config":  {
+                   "episodes":  4,
+                   "max_steps":  6,
+                   "latent_dim":  16,
+                   "latent_weight":  0.15,
+                   "seed_base":  101
+               },
+    "counts":  {
+                   "swmd_min_found":  40,
+                   "runs_ok":  40
+               },
+    "runs":  [
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\charter_of_ashen_aegis.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  24,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\charter_of_ashen_aegis-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\council_of_valedorn.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  24,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\council_of_valedorn-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplo1.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  8,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\diplo1-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_backstab.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  16,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\diplomacy_forecast_backstab-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_backstab_p.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  16,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\diplomacy_forecast_backstab_p-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_coalition.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  16,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\diplomacy_forecast_coalition-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_coalition_p.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  16,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\diplomacy_forecast_coalition_p-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_defection.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  16,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\diplomacy_forecast_defection-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_defection_p.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  16,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\diplomacy_forecast_defection_p-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\preflight_1904_alliance_pressure_p.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  16,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\diplomacy_preflight_1904_alliance_pressure_p-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\preflight_1914_austria_entanglement_p.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  16,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\diplomacy_preflight_1914_austria_entanglement_p-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\dogs_in_a_barrel_secret_endings_spools.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  4,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\dogs_in_a_barrel_secret_endings_spools-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\elysin_prince.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  24,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\elysin_prince-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\england_to_france_honest.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  4,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\england_to_france_honest-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\england_to_france_honest_p.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  4,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\england_to_france_honest_p-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\first_and_last_men_complete.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  4,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\first_and_last_men_complete-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\first_and_last_men_flagship.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  24,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\first_and_last_men_flagship-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\france_germany_machiavellian_extended.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  4,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\france_germany_machiavellian_extended-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\france_germany_machiavellian_extended_p.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  4,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\france_germany_machiavellian_extended_p-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\france_to_germany_machiavellian.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  4,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\france_to_germany_machiavellian-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\france_to_germany_machiavellian_p.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  4,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\france_to_germany_machiavellian_p-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\gaza_doctor.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  24,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\gaza_doctor-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\glam_to_shadow_honest.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  0,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\glam_to_shadow_honest-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\hamlet.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  24,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\hamlet-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\hamlet_p.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  24,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\hamlet_p-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\hive_to_glam_machiavellian.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  4,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\hive_to_glam_machiavellian-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia (2).swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  20,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\mihna_constitutional_alignment_-_copia_(2)-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia (3).swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  20,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\mihna_constitutional_alignment_-_copia_(3)-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia (4).swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  20,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\mihna_constitutional_alignment_-_copia_(4)-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia (5).swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  24,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\mihna_constitutional_alignment_-_copia_(5)-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  20,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\mihna_constitutional_alignment_-_copia-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  24,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\mihna_constitutional_alignment-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\no_exit_p2.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  0,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\no_exit_p2-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\ottoman_qadi.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  4,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\ottoman_qadi-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\reservoirdogs_p.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  4,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\reservoirdogs_p-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\robert_of_st_albans.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  24,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\robert_of_st_albans-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\russia_to_austria_grudger.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  4,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\russia_to_austria_grudger-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\russia_to_austria_grudger_p.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  4,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\russia_to_austria_grudger_p-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\shadow_to_bio_grudger.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  8,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\shadow_to_bio_grudger-SAEv1_summary.json"
+                 },
+                 {
+                     "world":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\storyworld_template_v1_canonical_full_normalized.swmd.min.md",
+                     "status":  "ok",
+                     "episodes":  4,
+                     "steps":  4,
+                     "summary_out":  "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\storyworld_template_v1_canonical_full_normalized-SAEv1_summary.json"
+                 }
+             ]
+}

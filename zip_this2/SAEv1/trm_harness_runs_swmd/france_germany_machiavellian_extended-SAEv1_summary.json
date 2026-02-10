@@ -1,0 +1,14 @@
+{
+  "episodes": 4,
+  "steps": 4,
+  "completed_episodes": 0,
+  "outcomes": {
+    "end": 4
+  },
+  "coalition_recommendation_steps": 0,
+  "defection_recommendation_steps": 0,
+  "latent_trace_out": "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs_swmd\\france_germany_machiavellian_extended-SAEv1_latent_traces.jsonl",
+  "latent_dim": 16,
+  "latent_weight": 0.15,
+  "world_input_type": "swmd.min.md"
+}

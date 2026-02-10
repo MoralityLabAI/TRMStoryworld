@@ -23,3 +23,9 @@ egotiation-storyworld/examples/diplomacy_min.json and confirmed trace, latent tr
 - Ran SAEv1 batch outputs for harness-compatible minified worlds and packaged consolidated artifacts into zip_this2.zip.
 - Wrote 	ools/bench/out/SAEv1/trm_harness_runs/batch_manifest-SAEv1.json, including explicit skip inventory for .swmd.min.md files pending harness support.
 
+## 2026-02-10 Turn 6
+- Extended 
+egotiation-storyworld/tools/trm_trace_benchmark.py to support .swmd.min.md inputs via 	ools.bench.swmd_utils.parse_swmd and a deterministic SWMD rollout path.
+- Preserved existing JSON harness behavior and latent trace outputs; added input-type marker in summary (world_input_type).
+- Ran batch on all 40 SWMD-min files and refreshed zip_this2.zip with SAEv1 outputs and manifests.
+

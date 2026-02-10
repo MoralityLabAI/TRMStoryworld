@@ -7,6 +7,7 @@ import argparse
 import copy
 import hashlib
 import json
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,8 +18,12 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+REPO_ROOT = ROOT.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from env import DiplomacyStoryworldEnv, load_storyworld
+from tools.bench.swmd_utils import SwmdEncounter, SwmdOption, SwmdReaction, parse_swmd, stable_json as stable_json_swmd
 
 
 def stable_json(obj: Any) -> str:
@@ -215,6 +220,58 @@ def latent_update(prev_h: np.ndarray, feat: np.ndarray) -> np.ndarray:
         bias = 0.1 * float(i + 1) / float(max(1, dim))
         out[i] = np.tanh(0.72 * base + 0.55 * s1 + 0.25 * s2 + bias)
     return out
+
+
+def parse_desirability_int(raw: str) -> int:
+    m = re.search(r"-?\d+", str(raw))
+    if not m:
+        return 0
+    return int(m.group(0))
+
+
+def swmd_prompt(enc: SwmdEncounter, options: List[SwmdOption]) -> str:
+    lines = ["<SWMD-TRM>", f"E={enc.enc_id}", f"T={enc.turn_span}", f"TITLE={enc.title}", "CHOICES:"]
+    for i, opt in enumerate(options):
+        rxn = sorted(opt.reactions, key=lambda r: r.rxn_id)[0] if opt.reactions else None
+        nxt = "END" if rxn is None else (rxn.consequence or "END")
+        desc = "" if rxn is None else rxn.desirability
+        lines.append(f"{i} {opt.opt_id} -> {nxt} D={desc} | O:{opt.text}")
+    lines.append("</SWMD-TRM>")
+    return "\n".join(lines)
+
+
+def latent_features_swmd(turn: int, enc: SwmdEncounter, opt: SwmdOption, rxn: Optional[SwmdReaction], pick_idx: int) -> np.ndarray:
+    desirability = 0 if rxn is None else parse_desirability_int(rxn.desirability)
+    reaction_count = len(opt.reactions)
+    option_count = max(1, len(enc.options))
+    next_exists = 0.0 if (rxn is None or not rxn.consequence) else 1.0
+    vec = np.asarray(
+        [
+            float(turn) / 10.0,
+            float(pick_idx) / float(max(1, option_count - 1)),
+            float(reaction_count) / 4.0,
+            float(desirability) / 10.0,
+            float(len(opt.text or "")) / 120.0,
+            float(len((rxn.text if rxn else "") or "")) / 120.0,
+            next_exists,
+            float(len(enc.spools or [])) / 6.0,
+        ],
+        dtype=np.float32,
+    )
+    return vec
+
+
+@dataclass
+class SwmdCandidateEval:
+    pick_idx: int
+    opt_id: str
+    reaction_id: str
+    consequence: str
+    desirability: int
+    score: int
+    latent_bonus: int
+    latent_norm: float
+    h_after: List[float]
 
 
 def score_event(
@@ -490,6 +547,173 @@ def run_episode(
     }
 
 
+def run_episode_swmd(
+    swmd_encounters: Dict[str, SwmdEncounter],
+    start_id: str,
+    max_steps: int,
+    episode_idx: int,
+    latent_dim: int,
+    latent_weight: float,
+) -> Dict[str, Any]:
+    cur = start_id
+    leaf_hashes: List[str] = []
+    steps: List[Dict[str, Any]] = []
+    latent_steps: List[Dict[str, Any]] = []
+    h = np.zeros((int(max(1, latent_dim)),), dtype=np.float32)
+    final_outcome = "end"
+    final_node = start_id
+    for turn in range(max_steps):
+        enc = swmd_encounters.get(cur)
+        if enc is None:
+            break
+        options = sorted(enc.options, key=lambda o: o.opt_id)
+        if not options:
+            break
+        prompt = swmd_prompt(enc, options)
+        state_hash = h_hex(stable_json_swmd({"encounter": enc.enc_id, "turn": turn}))
+        candidates: List[SwmdCandidateEval] = []
+        for pick_idx, opt in enumerate(options):
+            rxn = sorted(opt.reactions, key=lambda r: r.rxn_id)[0] if opt.reactions else None
+            desirability = 0 if rxn is None else parse_desirability_int(rxn.desirability)
+            feat = latent_features_swmd(turn, enc, opt, rxn, pick_idx)
+            h_after = latent_update(h, feat)
+            latent_norm = float(np.linalg.norm(h_after))
+            latent_bonus = int(round(float(latent_weight) * latent_norm * 1000.0))
+            base_score = int(1000 * desirability + 10 * len(opt.reactions))
+            candidates.append(
+                SwmdCandidateEval(
+                    pick_idx=pick_idx,
+                    opt_id=opt.opt_id,
+                    reaction_id="" if rxn is None else rxn.rxn_id,
+                    consequence="END" if (rxn is None or not rxn.consequence) else rxn.consequence,
+                    desirability=desirability,
+                    score=base_score + latent_bonus,
+                    latent_bonus=latent_bonus,
+                    latent_norm=latent_norm,
+                    h_after=h_after.astype(np.float32).tolist(),
+                )
+            )
+
+        best = sorted(candidates, key=lambda c: (-c.score, c.pick_idx))[0]
+        chosen_opt = options[best.pick_idx]
+        chosen_rxn = sorted(chosen_opt.reactions, key=lambda r: r.rxn_id)[0] if chosen_opt.reactions else None
+        next_id = None if chosen_rxn is None else chosen_rxn.consequence
+        h_before = h.copy()
+        feat_live = latent_features_swmd(turn, enc, chosen_opt, chosen_rxn, best.pick_idx)
+        h = latent_update(h, feat_live)
+
+        event = {
+            "outcome": "advance" if next_id else "terminal",
+            "encounter_id": enc.enc_id,
+            "option_id": chosen_opt.opt_id,
+            "reaction_id": "" if chosen_rxn is None else chosen_rxn.rxn_id,
+            "next_encounter": next_id,
+            "metrics": {
+                "desirability": best.desirability,
+                "reaction_count": len(chosen_opt.reactions),
+                "latent_bonus": best.latent_bonus,
+            },
+        }
+        out_hash = h_hex(stable_json_swmd({"next": next_id or "END"}))
+        leaf = mk_leaf(episode_idx, turn, state_hash, best.pick_idx, 1, out_hash)
+        leaf_hashes.append(leaf)
+
+        steps.append(
+            {
+                "episode": episode_idx,
+                "turn": turn,
+                "prompt": prompt,
+                "label": f"PICK {best.pick_idx}",
+                "k_label": "K 1",
+                "state_hash": state_hash,
+                "receipt_leaf": leaf,
+                "reasoning_interpret_log": {
+                    "decision_label": "swmd-choice",
+                    "candidate_scores": [
+                        {
+                            "pick": c.pick_idx,
+                            "opt_id": c.opt_id,
+                            "reaction_id": c.reaction_id,
+                            "next_encounter": c.consequence,
+                            "desirability": c.desirability,
+                            "score": c.score,
+                            "latent_bonus": c.latent_bonus,
+                            "latent_norm": c.latent_norm,
+                        }
+                        for c in sorted(candidates, key=lambda x: x.pick_idx)
+                    ],
+                },
+                "negotiation_diary": {
+                    "turn": turn,
+                    "action_label": chosen_opt.opt_id,
+                    "decision_label": "swmd-choice",
+                    "k_budget": 1,
+                },
+                "recommendations": [
+                    {
+                        "label": "best",
+                        "pick": best.pick_idx,
+                        "action": chosen_opt.opt_id,
+                    }
+                ],
+                "opponent_policy": "swmd-deterministic",
+                "latent": {
+                    "h_before": h_before.astype(np.float32).tolist(),
+                    "h_after": h.astype(np.float32).tolist(),
+                    "latent_bonus": int(best.latent_bonus),
+                    "latent_norm": float(np.linalg.norm(h)),
+                },
+                "event": event,
+            }
+        )
+        latent_steps.append(
+            {
+                "episode": episode_idx,
+                "turn": turn,
+                "t": turn,
+                "h": h.astype(np.float32).tolist(),
+                "aux": {
+                    "h_before": h_before.astype(np.float32).tolist(),
+                    "features": feat_live.astype(np.float32).tolist(),
+                    "latent_bonus": int(best.latent_bonus),
+                    "policy_weight": float(latent_weight),
+                },
+                "y": float(best.score),
+                "metrics": {
+                    "pick_idx": int(best.pick_idx),
+                    "action": chosen_opt.opt_id,
+                    "state_hash": state_hash,
+                },
+            }
+        )
+
+        final_node = next_id or final_node
+        if not next_id:
+            final_outcome = "terminal"
+            break
+        cur = next_id
+
+    return {
+        "episode": episode_idx,
+        "trace_root": merkle_root_hex(leaf_hashes),
+        "output_commitment": h_hex(
+            stable_json_swmd(
+                {
+                    "episode": episode_idx,
+                    "labels": [s["label"] for s in steps],
+                    "final_event": steps[-1]["event"] if steps else {},
+                    "trace_root": merkle_root_hex(leaf_hashes),
+                }
+            )
+        ),
+        "steps": steps,
+        "latent_steps": latent_steps,
+        "done": final_outcome == "terminal",
+        "final_outcome": final_outcome,
+        "final_node": final_node,
+    }
+
+
 def write_jsonl(path: Path, rows: List[Dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
@@ -574,24 +798,48 @@ def scripted_opponent_action(
 
 def main() -> int:
     args = parse_args()
-    world = load_storyworld(args.world)
-    nmap = node_map(world)
+    world_path = Path(args.world)
+    is_swmd = "".join(world_path.suffixes).endswith(".swmd.min.md")
+    world = None
+    swmd_world = None
+    nmap = {}
+    swmd_encounters: Dict[str, SwmdEncounter] = {}
+    swmd_start_id = ""
+    if is_swmd:
+        swmd_world = parse_swmd(world_path)
+        swmd_encounters = {e.enc_id: e for e in swmd_world.encounters}
+        if not swmd_encounters:
+            raise ValueError(f"No encounters parsed from SWMD file: {world_path}")
+        swmd_start_id = sorted(swmd_world.encounters, key=lambda e: (e.turn_span, e.enc_id))[0].enc_id
+    else:
+        world = load_storyworld(args.world)
+        nmap = node_map(world)
     episodes = []
     trace_rows = []
     latent_trace_rows = []
     for idx in range(args.episodes):
         ep_seed = args.seed + idx
-        ep = run_episode(
-            world=world,
-            nmap=nmap,
-            env_seed=ep_seed,
-            focal_agent=args.focal_agent,
-            max_steps=args.max_steps,
-            episode_idx=idx,
-            opponent_policy=args.opponent_policy,
-            latent_dim=args.latent_dim,
-            latent_weight=args.latent_weight,
-        )
+        if is_swmd:
+            ep = run_episode_swmd(
+                swmd_encounters=swmd_encounters,
+                start_id=swmd_start_id,
+                max_steps=args.max_steps,
+                episode_idx=idx,
+                latent_dim=args.latent_dim,
+                latent_weight=args.latent_weight,
+            )
+        else:
+            ep = run_episode(
+                world=world,
+                nmap=nmap,
+                env_seed=ep_seed,
+                focal_agent=args.focal_agent,
+                max_steps=args.max_steps,
+                episode_idx=idx,
+                opponent_policy=args.opponent_policy,
+                latent_dim=args.latent_dim,
+                latent_weight=args.latent_weight,
+            )
         episodes.append(ep)
         for step in ep["steps"]:
             trace_rows.append(step)
@@ -604,12 +852,13 @@ def main() -> int:
     summary_out = Path(args.summary_out)
     write_jsonl(trace_out, trace_rows)
     write_jsonl(latent_trace_out, latent_trace_rows)
-    write_jsonl(episode_out, [{"episode": ep["episode"], "trace_root": ep["trace_root"], "output_commitment": ep["output_commitment"], "done": ep["done"], "final_outcome": ep["final_outcome"]} for ep in episodes])
+    write_jsonl(episode_out, [{"episode": ep["episode"], "trace_root": ep["trace_root"], "output_commitment": ep["output_commitment"], "done": ep["done"], "final_outcome": ep["final_outcome"], "final_node": ep.get("final_node")} for ep in episodes])
 
     summary = summarize(episodes)
     summary["latent_trace_out"] = str(latent_trace_out)
     summary["latent_dim"] = int(args.latent_dim)
     summary["latent_weight"] = float(args.latent_weight)
+    summary["world_input_type"] = "swmd.min.md" if is_swmd else "storyworld.json"
     summary_out.parent.mkdir(parents=True, exist_ok=True)
     summary_out.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))
