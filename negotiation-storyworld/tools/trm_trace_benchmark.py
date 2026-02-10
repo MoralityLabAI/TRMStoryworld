@@ -173,6 +173,8 @@ def run_counterfactual(
     focal_agent: str,
     focal_action: Dict[str, Any],
     opponent_policy: str,
+    episode_idx: int,
+    turn: int,
 ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     sim_env = DiplomacyStoryworldEnv(world, seed=0, log_path=None)
     sim_env.state = copy.deepcopy(base_state)
@@ -181,10 +183,15 @@ def run_counterfactual(
     for aid in all_agents:
         if aid == focal_agent:
             actions[aid] = focal_action
-        elif opponent_policy == "ally-first":
-            actions[aid] = {"type": "propose", "target": focal_agent}
         else:
-            actions[aid] = {"type": "wait"}
+            actions[aid] = scripted_opponent_action(
+                world=world,
+                aid=aid,
+                focal_agent=focal_agent,
+                opponent_policy=opponent_policy,
+                episode_idx=episode_idx,
+                turn=turn,
+            )
     state_after, event, _done = sim_env.step(actions, [])
     return state_after, event
 
@@ -219,7 +226,15 @@ def run_episode(
         state_hash = h_hex(stable_json(state))
         candidates: List[CandidateEval] = []
         for pick_idx, action in enumerate(choices):
-            sim_state, sim_event = run_counterfactual(world, state, focal_agent, action, opponent_policy)
+            sim_state, sim_event = run_counterfactual(
+                world=world,
+                base_state=state,
+                focal_agent=focal_agent,
+                focal_action=action,
+                opponent_policy=opponent_policy,
+                episode_idx=episode_idx,
+                turn=int(state.get("turn", 0)),
+            )
             score, components = score_event(sim_state, sim_event, focal_agent, action)
             candidates.append(
                 CandidateEval(
@@ -245,10 +260,15 @@ def run_episode(
         for aid in all_agents:
             if aid == focal_agent:
                 live_actions[aid] = best.action
-            elif opponent_policy == "ally-first":
-                live_actions[aid] = {"type": "propose", "target": focal_agent}
             else:
-                live_actions[aid] = {"type": "wait"}
+                live_actions[aid] = scripted_opponent_action(
+                    world=world,
+                    aid=aid,
+                    focal_agent=focal_agent,
+                    opponent_policy=opponent_policy,
+                    episode_idx=episode_idx,
+                    turn=int(state.get("turn", 0)),
+                )
 
         next_state, event, done = env.step(live_actions, [])
         out_hash = h_hex(stable_json(event.get("outcome")))
@@ -323,6 +343,7 @@ def run_episode(
                 "reasoning_interpret_log": reasoning_interpret_log,
                 "negotiation_diary": negotiation_diary,
                 "recommendations": recommendations,
+                "opponent_policy": opponent_policy,
                 "event": event,
             }
         )
@@ -391,11 +412,41 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-steps", type=int, default=6)
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--focal-agent", type=str, default="AgentA")
-    parser.add_argument("--opponent-policy", choices=["wait", "ally-first"], default="wait")
+    parser.add_argument("--opponent-policy", choices=["wait", "ally-first", "mixed"], default="wait")
     parser.add_argument("--trace-out", type=str, default="logs/trm_sw1_traces.jsonl")
     parser.add_argument("--episode-out", type=str, default="logs/trm_sw1_episodes.jsonl")
     parser.add_argument("--summary-out", type=str, default="logs/trm_sw1_summary.json")
     return parser.parse_args()
+
+
+def scripted_opponent_action(
+    world: Dict[str, Any],
+    aid: str,
+    focal_agent: str,
+    opponent_policy: str,
+    episode_idx: int,
+    turn: int,
+) -> Dict[str, Any]:
+    if opponent_policy == "wait":
+        return {"type": "wait"}
+    if opponent_policy == "ally-first":
+        return {"type": "propose", "target": focal_agent}
+    targets = sorted(
+        [agent.get("id") for agent in world.get("agents", []) if agent.get("id") and agent.get("id") != aid]
+    )
+    if not targets:
+        return {"type": "wait"}
+    seed_base = f"{episode_idx}|{turn}|{aid}|{focal_agent}"
+    mode = int(hashlib.sha256((seed_base + "|mode").encode("utf-8")).hexdigest()[:8], 16) % 4
+    target_idx = int(hashlib.sha256((seed_base + "|target").encode("utf-8")).hexdigest()[:8], 16) % len(targets)
+    target = targets[target_idx]
+    if mode == 0:
+        return {"type": "wait"}
+    if mode == 1:
+        return {"type": "propose", "target": target}
+    if mode == 2:
+        return {"type": "ally", "target": target}
+    return {"type": "betray", "target": target}
 
 
 def main() -> int:

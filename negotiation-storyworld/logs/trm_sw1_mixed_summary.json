@@ -1,0 +1,10 @@
+{
+  "episodes": 8,
+  "steps": 13,
+  "completed_episodes": 8,
+  "outcomes": {
+    "betrayal": 8
+  },
+  "coalition_recommendation_steps": 13,
+  "defection_recommendation_steps": 13
+}

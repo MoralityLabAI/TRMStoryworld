@@ -1,0 +1,13 @@
+{
+  "mission": "trm-controller-dataset-from-swmd-min",
+  "target": "C:\\projects\\GPTStoryworld\\storyworlds\\diplomacy\\forecast_backstab_p.swmd.min.md",
+  "result": "ok",
+  "rows": 7,
+  "encounters": 7,
+  "swmd_hash": "5bf2470e5b3752b95271226759f1d7c6190e8f6534d6061f378c78548708dce9",
+  "k_budget_counts": {
+    "k1": 0,
+    "k2": 7
+  },
+  "out": "C:\\projects\\StoryworldTRM\\TRMStoryworld\\negotiation-storyworld\\logs\\forecast_backstab_swmd_ctrl_sft.jsonl"
+}
