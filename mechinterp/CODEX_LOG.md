@@ -19,3 +19,7 @@ egotiation-storyworld/tools/trm_trace_benchmark.py to thread deterministic recur
 - Smoke-validated on 
 egotiation-storyworld/examples/diplomacy_min.json and confirmed trace, latent trace, and summary outputs.
 
+## 2026-02-10 Turn 5
+- Ran SAEv1 batch outputs for harness-compatible minified worlds and packaged consolidated artifacts into zip_this2.zip.
+- Wrote 	ools/bench/out/SAEv1/trm_harness_runs/batch_manifest-SAEv1.json, including explicit skip inventory for .swmd.min.md files pending harness support.
+

@@ -1,0 +1,13 @@
+{
+  "episodes": 6,
+  "steps": 36,
+  "completed_episodes": 6,
+  "outcomes": {
+    "maneuver": 6
+  },
+  "coalition_recommendation_steps": 36,
+  "defection_recommendation_steps": 36,
+  "latent_trace_out": "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\SAEv1\\trm_harness_runs\\diplomacy_min-SAEv1_latent_traces.jsonl",
+  "latent_dim": 16,
+  "latent_weight": 0.15
+}

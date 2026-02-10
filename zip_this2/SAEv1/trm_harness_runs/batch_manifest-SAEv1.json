@@ -1,0 +1,73 @@
+﻿{
+    "mission":  "TRM harness minified storyworld batch (SAEv1)",
+    "generated_at":  "2026-02-10T19:56:50",
+    "harness":  "negotiation-storyworld/tools/trm_trace_benchmark.py",
+    "config":  {
+                   "episodes":  6,
+                   "max_steps":  6,
+                   "seed":  31,
+                   "latent_dim":  16,
+                   "latent_weight":  0.15
+               },
+    "counts":  {
+                   "json_min_found":  1,
+                   "swmd_min_found":  40,
+                   "runs_ok":  1,
+                   "skipped":  40
+               },
+    "runs":  [
+                 {
+                     "world":  "negotiation-storyworld/examples/diplomacy_min.json",
+                     "world_type":  "json_min",
+                     "status":  "ok",
+                     "episodes":  6,
+                     "steps":  36,
+                     "trace_out":  "tools/bench/out/SAEv1/trm_harness_runs/diplomacy_min-SAEv1_traces.jsonl",
+                     "episode_out":  "tools/bench/out/SAEv1/trm_harness_runs/diplomacy_min-SAEv1_episodes.jsonl",
+                     "latent_trace_out":  "tools/bench/out/SAEv1/trm_harness_runs/diplomacy_min-SAEv1_latent_traces.jsonl",
+                     "summary_out":  "tools/bench/out/SAEv1/trm_harness_runs/diplomacy_min-SAEv1_summary.json"
+                 }
+             ],
+    "skipped_swmd_min_files":  [
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\charter_of_ashen_aegis.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\council_of_valedorn.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplo1.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\dogs_in_a_barrel_secret_endings_spools.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\elysin_prince.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\england_to_france_honest.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\england_to_france_honest_p.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\first_and_last_men_complete.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\first_and_last_men_flagship.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\france_germany_machiavellian_extended.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\france_germany_machiavellian_extended_p.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\france_to_germany_machiavellian.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\france_to_germany_machiavellian_p.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\gaza_doctor.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\glam_to_shadow_honest.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\hamlet.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\hamlet_p.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\hive_to_glam_machiavellian.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia (2).swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia (3).swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia (4).swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia (5).swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\no_exit_p2.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\ottoman_qadi.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\reservoirdogs_p.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\robert_of_st_albans.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\russia_to_austria_grudger.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\russia_to_austria_grudger_p.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\shadow_to_bio_grudger.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\storyworld_template_v1_canonical_full_normalized.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_backstab.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_backstab_p.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_coalition.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_coalition_p.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_defection.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_defection_p.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\preflight_1904_alliance_pressure_p.swmd.min.md",
+                                   "C:\\projects\\StoryworldTRM\\TRMStoryworld\\tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\preflight_1914_austria_entanglement_p.swmd.min.md"
+                               ]
+}
