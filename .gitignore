@@ -1,0 +1,6 @@
+codex-chat-sessions/
+skills/
+tools/bench/out/
+
+__pycache__/
+*.pyc
