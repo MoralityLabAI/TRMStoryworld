@@ -6,7 +6,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import platform
 import re
+import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -58,6 +60,22 @@ def parse_args() -> argparse.Namespace:
 def canonical_hash(text: str) -> str:
     normalized = "\n".join(line.rstrip() for line in text.replace("\r\n", "\n").split("\n")).strip() + "\n"
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+
+
+def stable_json(obj: object) -> str:
+    return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+
+
+def git_commit(repo_root: Path) -> str:
+    try:
+        out = subprocess.check_output(
+            ["git", "-C", str(repo_root), "rev-parse", "HEAD"],
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+        return out.strip()
+    except Exception:
+        return ""
 
 
 def parse_swmd_min(path: Path) -> Tuple[str, str, Dict[str, Encounter]]:
@@ -176,7 +194,9 @@ def main() -> int:
     k2_count = 0
     encounter_count = 0
 
-    with out_path.open("w", encoding="utf-8") as handle:
+    canon_rows: List[str] = []
+    row_leaves: List[str] = []
+    with out_path.open("w", encoding="utf-8", newline="\n") as handle:
         for enc_id in sorted(encounters.keys()):
             enc = encounters[enc_id]
             if not enc.options:
@@ -211,9 +231,28 @@ def main() -> int:
                 },
             }
             handle.write(json.dumps(out_row, ensure_ascii=False) + "\n")
+            canon = stable_json(out_row)
+            canon_rows.append(canon)
+            row_leaves.append(hashlib.sha256(f"SFT1|{rows}|{hashlib.sha256(str(out_row['input']).encode('utf-8')).hexdigest()}|{hashlib.sha256(str(out_row['target']).encode('utf-8')).hexdigest()}".encode("utf-8")).hexdigest())
             rows += 1
             encounter_count += 1
 
+    dataset_canonical_bytes = ("\n".join(canon_rows) + ("\n" if canon_rows else "")).encode("utf-8")
+    dataset_hash = hashlib.sha256(dataset_canonical_bytes).hexdigest()
+    if row_leaves:
+        level = [bytes.fromhex(x) for x in row_leaves]
+        while len(level) > 1:
+            if len(level) % 2 == 1:
+                level.append(level[-1])
+            nxt = []
+            for i in range(0, len(level), 2):
+                nxt.append(hashlib.sha256(level[i] + level[i + 1]).digest())
+            level = nxt
+        rows_merkle_root = level[0].hex()
+    else:
+        rows_merkle_root = hashlib.sha256(b"EMPTY").hexdigest()
+
+    repo_root = Path(__file__).resolve().parents[2]
     summary = {
         "mission": "trm-controller-dataset-from-swmd-min",
         "target": str(swmd_path),
@@ -221,6 +260,14 @@ def main() -> int:
         "rows": rows,
         "encounters": encounter_count,
         "swmd_hash": swmd_hash,
+        "dataset_hash": dataset_hash,
+        "rows_merkle_root": rows_merkle_root,
+        "schema_version": 1,
+        "newline_mode": "LF",
+        "normalized_bytes_spec": "stable_json(sort_keys=True,separators=',:') + LF",
+        "builder_git_commit": git_commit(repo_root),
+        "exporter_git_commit": "",
+        "python_version": platform.python_version(),
         "k_budget_counts": {"k1": k1_count, "k2": k2_count},
         "out": str(out_path),
     }
