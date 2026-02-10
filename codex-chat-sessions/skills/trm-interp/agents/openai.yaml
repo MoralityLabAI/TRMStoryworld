@@ -1,0 +1,4 @@
+interface:
+  display_name: "TRM Interp"
+  short_description: "Repeatable TRM trace/SAE/intervention/report workflow."
+  default_prompt: "Run the standard TRMInterp loop: trace, SAE fit, intervene, and report with reproducible outputs."
