@@ -1,0 +1,41 @@
+world_id,target,episodes,steps,steps_per_episode,top_outcome,top_outcome_count,rss_mb,trace_rows
+charter_of_ashen_aegis.swmd.min,tools\bench\out\storyworlds_swmd_min_local\charter_of_ashen_aegis.swmd.min.md,10,100,10.0,page_public,10,357.7265625,100
+council_of_valedorn.swmd.min,tools\bench\out\storyworlds_swmd_min_local\council_of_valedorn.swmd.min.md,10,100,10.0,page_square,10,358.12109375,100
+diplo1.swmd.min,tools\bench\out\storyworlds_swmd_min_local\diplo1.swmd.min.md,10,20,2.0,page_outcome_alliance,10,358.12109375,20
+dogs_in_a_barrel_secret_endings_spools.swmd.min,tools\bench\out\storyworlds_swmd_min_local\dogs_in_a_barrel_secret_endings_spools.swmd.min.md,10,10,1.0,wild,10,358.49609375,10
+elysin_prince.swmd.min,tools\bench\out\storyworlds_swmd_min_local\elysin_prince.swmd.min.md,10,100,10.0,page_truth,10,358.51953125,100
+england_to_france_honest.swmd.min,tools\bench\out\storyworlds_swmd_min_local\england_to_france_honest.swmd.min.md,10,10,1.0,wild,10,358.51953125,10
+england_to_france_honest_p.swmd.min,tools\bench\out\storyworlds_swmd_min_local\england_to_france_honest_p.swmd.min.md,10,10,1.0,wild,10,358.5234375,10
+first_and_last_men_complete.swmd.min,tools\bench\out\storyworlds_swmd_min_local\first_and_last_men_complete.swmd.min.md,10,10,1.0,None,10,359.2578125,10
+first_and_last_men_flagship.swmd.min,tools\bench\out\storyworlds_swmd_min_local\first_and_last_men_flagship.swmd.min.md,10,100,10.0,page_0010,10,359.4140625,100
+forecast_backstab.swmd.min,tools\bench\out\storyworlds_swmd_min_local\diplomacy\forecast_backstab.swmd.min.md,10,40,4.0,enc_ending_1,10,358.125,40
+forecast_backstab_p.swmd.min,tools\bench\out\storyworlds_swmd_min_local\diplomacy\forecast_backstab_p.swmd.min.md,10,40,4.0,enc_ending_1,10,358.14453125,40
+forecast_coalition.swmd.min,tools\bench\out\storyworlds_swmd_min_local\diplomacy\forecast_coalition.swmd.min.md,10,40,4.0,enc_ending_1,10,358.14453125,40
+forecast_coalition_p.swmd.min,tools\bench\out\storyworlds_swmd_min_local\diplomacy\forecast_coalition_p.swmd.min.md,10,40,4.0,enc_ending_1,10,358.14453125,40
+forecast_defection.swmd.min,tools\bench\out\storyworlds_swmd_min_local\diplomacy\forecast_defection.swmd.min.md,10,40,4.0,enc_ending_1,10,358.14453125,40
+forecast_defection_p.swmd.min,tools\bench\out\storyworlds_swmd_min_local\diplomacy\forecast_defection_p.swmd.min.md,10,40,4.0,enc_ending_1,10,358.14453125,40
+france_germany_machiavellian_extended.swmd.min,tools\bench\out\storyworlds_swmd_min_local\france_germany_machiavellian_extended.swmd.min.md,10,10,1.0,wild,10,359.4140625,10
+france_germany_machiavellian_extended_p.swmd.min,tools\bench\out\storyworlds_swmd_min_local\france_germany_machiavellian_extended_p.swmd.min.md,10,10,1.0,wild,10,359.4140625,10
+france_to_germany_machiavellian.swmd.min,tools\bench\out\storyworlds_swmd_min_local\france_to_germany_machiavellian.swmd.min.md,10,10,1.0,wild,10,359.4140625,10
+france_to_germany_machiavellian_p.swmd.min,tools\bench\out\storyworlds_swmd_min_local\france_to_germany_machiavellian_p.swmd.min.md,10,10,1.0,wild,10,359.4140625,10
+gaza_doctor.swmd.min,tools\bench\out\storyworlds_swmd_min_local\gaza_doctor.swmd.min.md,10,100,10.0,page_drone_surgery,10,359.41796875,100
+glam_to_shadow_honest.swmd.min,tools\bench\out\storyworlds_swmd_min_local\glam_to_shadow_honest.swmd.min.md,10,0,0.0,page_outcome_respectful_distance,10,359.41796875,0
+hamlet.swmd.min,tools\bench\out\storyworlds_swmd_min_local\hamlet.swmd.min.md,10,100,10.0,page_act1_11,10,361.23046875,100
+hamlet_p.swmd.min,tools\bench\out\storyworlds_swmd_min_local\hamlet_p.swmd.min.md,10,100,10.0,page_act1_11,10,363.3359375,100
+hive_to_glam_machiavellian.swmd.min,tools\bench\out\storyworlds_swmd_min_local\hive_to_glam_machiavellian.swmd.min.md,10,10,1.0,page_enc16,10,363.33984375,10
+mihna_constitutional_alignment - copia (2).swmd.min,tools\bench\out\storyworlds_swmd_min_local\mihna_constitutional_alignment - copia (2).swmd.min.md,10,50,5.0,page_declaration,10,363.2578125,50
+mihna_constitutional_alignment - copia (3).swmd.min,tools\bench\out\storyworlds_swmd_min_local\mihna_constitutional_alignment - copia (3).swmd.min.md,10,50,5.0,page_declaration,10,363.2578125,50
+mihna_constitutional_alignment - copia (4).swmd.min,tools\bench\out\storyworlds_swmd_min_local\mihna_constitutional_alignment - copia (4).swmd.min.md,10,50,5.0,page_declaration,10,363.2578125,50
+mihna_constitutional_alignment - copia (5).swmd.min,tools\bench\out\storyworlds_swmd_min_local\mihna_constitutional_alignment - copia (5).swmd.min.md,10,80,8.0,page_declaration,10,363.2578125,80
+mihna_constitutional_alignment - copia.swmd.min,tools\bench\out\storyworlds_swmd_min_local\mihna_constitutional_alignment - copia.swmd.min.md,10,50,5.0,page_declaration,10,363.2578125,50
+mihna_constitutional_alignment.swmd.min,tools\bench\out\storyworlds_swmd_min_local\mihna_constitutional_alignment.swmd.min.md,10,80,8.0,page_end_rationalist,10,363.2578125,80
+no_exit_p2.swmd.min,tools\bench\out\storyworlds_swmd_min_local\no_exit_p2.swmd.min.md,10,0,0.0,page_end_fallback,10,363.26171875,0
+ottoman_qadi.swmd.min,tools\bench\out\storyworlds_swmd_min_local\ottoman_qadi.swmd.min.md,10,10,1.0,page_alley_brawl,10,363.6796875,10
+preflight_1904_alliance_pressure_p.swmd.min,tools\bench\out\storyworlds_swmd_min_local\diplomacy\preflight_1904_alliance_pressure_p.swmd.min.md,10,40,4.0,enc_ending_1,10,358.1796875,40
+preflight_1914_austria_entanglement_p.swmd.min,tools\bench\out\storyworlds_swmd_min_local\diplomacy\preflight_1914_austria_entanglement_p.swmd.min.md,10,40,4.0,enc_ending_1,10,358.18359375,40
+reservoirdogs_p.swmd.min,tools\bench\out\storyworlds_swmd_min_local\reservoirdogs_p.swmd.min.md,10,10,1.0,wild,10,363.75,10
+robert_of_st_albans.swmd.min,tools\bench\out\storyworlds_swmd_min_local\robert_of_st_albans.swmd.min.md,10,100,10.0,page_siege,10,363.75,100
+russia_to_austria_grudger.swmd.min,tools\bench\out\storyworlds_swmd_min_local\russia_to_austria_grudger.swmd.min.md,10,10,1.0,wild,10,363.75,10
+russia_to_austria_grudger_p.swmd.min,tools\bench\out\storyworlds_swmd_min_local\russia_to_austria_grudger_p.swmd.min.md,10,10,1.0,wild,10,363.75,10
+shadow_to_bio_grudger.swmd.min,tools\bench\out\storyworlds_swmd_min_local\shadow_to_bio_grudger.swmd.min.md,10,50,5.0,page_enc18,10,363.75,50
+storyworld_template_v1_canonical_full_normalized.swmd.min,tools\bench\out\storyworlds_swmd_min_local\storyworld_template_v1_canonical_full_normalized.swmd.min.md,10,10,1.0,wild,10,363.75,10

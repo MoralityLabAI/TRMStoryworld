@@ -5,9 +5,31 @@
   "rows": 7,
   "encounters": 7,
   "swmd_hash": "5bf2470e5b3752b95271226759f1d7c6190e8f6534d6061f378c78548708dce9",
+  "dataset_hash": "8f9f8b6f3627f61183dd275963d00d24f35a1f7532a8404d62c6a2e8665d9069",
+  "rows_merkle_root": "f6069c80822459deec4bb87c8f48d8f3863b13306f59b2ed1b93a8d4ee45483b",
+  "schema_version": 1,
+  "newline_mode": "LF",
+  "normalized_bytes_spec": "stable_json(sort_keys=True,separators=',:') + LF",
+  "builder_git_commit": "14490de291693ca1b67fc2101c8ee4c827c19957",
+  "exporter_git_commit": "",
+  "python_version": "3.11.4",
   "k_budget_counts": {
     "k1": 0,
     "k2": 7
   },
-  "out": "C:\\projects\\StoryworldTRM\\TRMStoryworld\\negotiation-storyworld\\logs\\forecast_backstab_swmd_ctrl_sft.jsonl"
+  "out": "C:\\projects\\StoryworldTRM\\TRMStoryworld\\negotiation-storyworld\\logs\\forecast_backstab_swmd_ctrl_sft.jsonl",
+  "run_identity": {
+    "schema_version": 1,
+    "swmd_hash": "5bf2470e5b3752b95271226759f1d7c6190e8f6534d6061f378c78548708dce9",
+    "dataset_hash": "8f9f8b6f3627f61183dd275963d00d24f35a1f7532a8404d62c6a2e8665d9069",
+    "rows_merkle_root": "f6069c80822459deec4bb87c8f48d8f3863b13306f59b2ed1b93a8d4ee45483b",
+    "builder_git_commit": "14490de291693ca1b67fc2101c8ee4c827c19957",
+    "trainer_git_commit": "",
+    "base_model_id": "",
+    "adapter_config_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "adapter_config": {},
+    "python_version": "3.11.4",
+    "normalized_bytes_spec": "stable_json(sort_keys=True,separators=',:') + LF"
+  },
+  "run_identity_hash": "e7e5c7ee36604cfdf9a1c813e900d632e03571096af07ee214b71bca2c3d8043"
 }

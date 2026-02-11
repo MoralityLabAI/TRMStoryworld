@@ -1,0 +1,59 @@
+{
+  "mission": "swmd-rollout-eval",
+  "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\robert_of_st_albans.swmd.min.md",
+  "swmd_hash": "34d58c352b08590297a7f60641bb67ea0959f429c3b4ad03da3c557861e6f0c7",
+  "result": "ok",
+  "base": {
+    "episodes": 10,
+    "steps": 100,
+    "outcomes": {
+      "page_siege": 10
+    }
+  },
+  "adapter": null,
+  "run_modes": "base-only",
+  "evidence_paths": {
+    "base_trace": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\robert_of_st_albans.swmd.min\\rollout_base_traces.jsonl",
+    "adapter_trace": "",
+    "base_episodes": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\robert_of_st_albans.swmd.min\\rollout_base_episodes.jsonl",
+    "adapter_episodes": ""
+  },
+  "runtime": {
+    "episodes": 10,
+    "max_steps": 10,
+    "rss_mb": 363.75,
+    "cuda_allocated_mb": 0.0,
+    "cuda_reserved_mb": 0.0,
+    "cuda_available": true,
+    "base_trace_rows": 100,
+    "adapter_trace_rows": 0,
+    "include_prompt_in_trace": false,
+    "include_steps_in_episodes": false,
+    "require_gpu": false,
+    "allow_large_model": false,
+    "max_model_params_millions": 200.0
+  },
+  "run_identity": {
+    "schema_version": 1,
+    "swmd_hash": "34d58c352b08590297a7f60641bb67ea0959f429c3b4ad03da3c557861e6f0c7",
+    "dataset_hash": "",
+    "rows_merkle_root": "",
+    "builder_git_commit": "",
+    "trainer_git_commit": "81bd29ea7b48506b44782f3b14200f0b32c521ec",
+    "base_model_id": "heuristic",
+    "adapter_config_hash": "2820c222fc4baa59c9e1d3d049917ad64e5cf6a9428d9978273531eb936b9f3d",
+    "adapter_config": {
+      "adapter_path": "",
+      "dtype": "float32",
+      "device": "cpu",
+      "episodes": 10,
+      "max_steps": 10,
+      "require_gpu": false,
+      "allow_large_model": false,
+      "max_model_params_millions": 200.0
+    },
+    "python_version": "3.11.4",
+    "normalized_bytes_spec": "stable_json(sort_keys=True,separators=',:') + LF"
+  },
+  "run_identity_hash": "dd32841dde637eae9a44fb895614158ee405571081bf6f2a5b95231affcbce66"
+}

@@ -1,0 +1,365 @@
+{
+  "count": 40,
+  "rows": [
+    {
+      "world_id": "charter_of_ashen_aegis.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\charter_of_ashen_aegis.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 357.7265625,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\charter_of_ashen_aegis.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "council_of_valedorn.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\council_of_valedorn.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 358.12109375,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\council_of_valedorn.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "diplo1.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\diplo1.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 358.12109375,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\diplo1.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "forecast_backstab.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_backstab.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 358.125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\forecast_backstab.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "forecast_backstab_p.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_backstab_p.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 358.14453125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\forecast_backstab_p.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "forecast_coalition.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_coalition.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 358.14453125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\forecast_coalition.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "forecast_coalition_p.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_coalition_p.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 358.14453125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\forecast_coalition_p.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "forecast_defection.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_defection.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 358.14453125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\forecast_defection.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "forecast_defection_p.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\forecast_defection_p.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 358.14453125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\forecast_defection_p.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "preflight_1904_alliance_pressure_p.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\preflight_1904_alliance_pressure_p.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 358.1796875,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\preflight_1904_alliance_pressure_p.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "preflight_1914_austria_entanglement_p.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\diplomacy\\preflight_1914_austria_entanglement_p.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 358.18359375,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\preflight_1914_austria_entanglement_p.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "dogs_in_a_barrel_secret_endings_spools.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\dogs_in_a_barrel_secret_endings_spools.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 358.49609375,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\dogs_in_a_barrel_secret_endings_spools.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "elysin_prince.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\elysin_prince.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 358.51953125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\elysin_prince.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "england_to_france_honest.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\england_to_france_honest.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 358.51953125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\england_to_france_honest.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "england_to_france_honest_p.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\england_to_france_honest_p.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 358.5234375,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\england_to_france_honest_p.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "first_and_last_men_complete.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\first_and_last_men_complete.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 359.2578125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\first_and_last_men_complete.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "first_and_last_men_flagship.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\first_and_last_men_flagship.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 359.4140625,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\first_and_last_men_flagship.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "france_germany_machiavellian_extended.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\france_germany_machiavellian_extended.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 359.4140625,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\france_germany_machiavellian_extended.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "france_germany_machiavellian_extended_p.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\france_germany_machiavellian_extended_p.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 359.4140625,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\france_germany_machiavellian_extended_p.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "france_to_germany_machiavellian.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\france_to_germany_machiavellian.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 359.4140625,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\france_to_germany_machiavellian.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "france_to_germany_machiavellian_p.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\france_to_germany_machiavellian_p.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 359.4140625,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\france_to_germany_machiavellian_p.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "gaza_doctor.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\gaza_doctor.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 359.41796875,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\gaza_doctor.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "glam_to_shadow_honest.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\glam_to_shadow_honest.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 359.41796875,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\glam_to_shadow_honest.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "hamlet.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\hamlet.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 361.23046875,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\hamlet.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "hamlet_p.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\hamlet_p.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.3359375,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\hamlet_p.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "hive_to_glam_machiavellian.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\hive_to_glam_machiavellian.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.33984375,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\hive_to_glam_machiavellian.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "mihna_constitutional_alignment - copia (2).swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia (2).swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.2578125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\mihna_constitutional_alignment - copia (2).swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "mihna_constitutional_alignment - copia (3).swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia (3).swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.2578125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\mihna_constitutional_alignment - copia (3).swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "mihna_constitutional_alignment - copia (4).swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia (4).swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.2578125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\mihna_constitutional_alignment - copia (4).swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "mihna_constitutional_alignment - copia (5).swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia (5).swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.2578125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\mihna_constitutional_alignment - copia (5).swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "mihna_constitutional_alignment - copia.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment - copia.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.2578125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\mihna_constitutional_alignment - copia.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "mihna_constitutional_alignment.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\mihna_constitutional_alignment.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.2578125,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\mihna_constitutional_alignment.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "no_exit_p2.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\no_exit_p2.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.26171875,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\no_exit_p2.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "ottoman_qadi.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\ottoman_qadi.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.6796875,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\ottoman_qadi.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "reservoirdogs_p.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\reservoirdogs_p.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.75,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\reservoirdogs_p.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "robert_of_st_albans.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\robert_of_st_albans.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.75,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\robert_of_st_albans.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "russia_to_austria_grudger.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\russia_to_austria_grudger.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.75,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\russia_to_austria_grudger.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "russia_to_austria_grudger_p.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\russia_to_austria_grudger_p.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.75,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\russia_to_austria_grudger_p.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "shadow_to_bio_grudger.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\shadow_to_bio_grudger.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.75,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\shadow_to_bio_grudger.swmd.min\\rollout_eval_summary.json"
+    },
+    {
+      "world_id": "storyworld_template_v1_canonical_full_normalized.swmd.min",
+      "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\storyworld_template_v1_canonical_full_normalized.swmd.min.md",
+      "run_modes": "base-only",
+      "adapter_steps": 0,
+      "adapter_episodes": 0,
+      "rss_mb": 363.75,
+      "summary_path": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\storyworld_template_v1_canonical_full_normalized.swmd.min\\rollout_eval_summary.json"
+    }
+  ]
+}

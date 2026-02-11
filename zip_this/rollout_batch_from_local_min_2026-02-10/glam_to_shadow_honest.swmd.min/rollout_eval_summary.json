@@ -1,0 +1,59 @@
+{
+  "mission": "swmd-rollout-eval",
+  "target": "tools\\bench\\out\\storyworlds_swmd_min_local\\glam_to_shadow_honest.swmd.min.md",
+  "swmd_hash": "a6dec03f683f8ae253ac0f44d2adeecade0feb8fc14d58a90c25c545a82d9fe8",
+  "result": "ok",
+  "base": {
+    "episodes": 10,
+    "steps": 0,
+    "outcomes": {
+      "page_outcome_respectful_distance": 10
+    }
+  },
+  "adapter": null,
+  "run_modes": "base-only",
+  "evidence_paths": {
+    "base_trace": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\glam_to_shadow_honest.swmd.min\\rollout_base_traces.jsonl",
+    "adapter_trace": "",
+    "base_episodes": "tools\\bench\\out\\rollout_batch_from_local_min_2026-02-10\\glam_to_shadow_honest.swmd.min\\rollout_base_episodes.jsonl",
+    "adapter_episodes": ""
+  },
+  "runtime": {
+    "episodes": 10,
+    "max_steps": 10,
+    "rss_mb": 359.41796875,
+    "cuda_allocated_mb": 0.0,
+    "cuda_reserved_mb": 0.0,
+    "cuda_available": true,
+    "base_trace_rows": 0,
+    "adapter_trace_rows": 0,
+    "include_prompt_in_trace": false,
+    "include_steps_in_episodes": false,
+    "require_gpu": false,
+    "allow_large_model": false,
+    "max_model_params_millions": 200.0
+  },
+  "run_identity": {
+    "schema_version": 1,
+    "swmd_hash": "a6dec03f683f8ae253ac0f44d2adeecade0feb8fc14d58a90c25c545a82d9fe8",
+    "dataset_hash": "",
+    "rows_merkle_root": "",
+    "builder_git_commit": "",
+    "trainer_git_commit": "81bd29ea7b48506b44782f3b14200f0b32c521ec",
+    "base_model_id": "heuristic",
+    "adapter_config_hash": "2820c222fc4baa59c9e1d3d049917ad64e5cf6a9428d9978273531eb936b9f3d",
+    "adapter_config": {
+      "adapter_path": "",
+      "dtype": "float32",
+      "device": "cpu",
+      "episodes": 10,
+      "max_steps": 10,
+      "require_gpu": false,
+      "allow_large_model": false,
+      "max_model_params_millions": 200.0
+    },
+    "python_version": "3.11.4",
+    "normalized_bytes_spec": "stable_json(sort_keys=True,separators=',:') + LF"
+  },
+  "run_identity_hash": "f0442bcb2f59835f1406bde8c1b68690bdee9738bab38f21d268b9b6fe038d1e"
+}

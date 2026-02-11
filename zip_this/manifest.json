@@ -1,0 +1,21 @@
+{
+  "created_from": "C:\\projects\\StoryworldTRM\\TRMStoryworld",
+  "included": [
+    "storyworlds_swmd_min_local/",
+    "rollout_batch_from_local_min_2026-02-10/",
+    "base_metrics.json",
+    "base_metrics.csv"
+  ],
+  "run_config": {
+    "episodes": 10,
+    "max_steps": 10,
+    "run_modes": "base-only",
+    "device": "cpu",
+    "dtype": "float32",
+    "max_rss_mb": 3072
+  },
+  "counts": {
+    "storyworld_swmd_min_files": 40,
+    "batch_worlds": 40
+  }
+}
