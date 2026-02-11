@@ -29,3 +29,7 @@ egotiation-storyworld/tools/trm_trace_benchmark.py to support .swmd.min.md input
 - Preserved existing JSON harness behavior and latent trace outputs; added input-type marker in summary (world_input_type).
 - Ran batch on all 40 SWMD-min files and refreshed zip_this2.zip with SAEv1 outputs and manifests.
 
+## 2026-02-11 Turn 7
+- Added unified parallel benchmark runner 	ools/bench/parallel_trm_hrm_codec_bench.py to execute TRM SWMD runs and HRM codec runs concurrently with one manifest.
+- Added README usage section and validated smoke run (	rm_ok=2, hrm_ok=2) using D:\Download\codec.txt.
+
