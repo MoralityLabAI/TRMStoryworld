@@ -33,3 +33,9 @@ egotiation-storyworld/tools/trm_trace_benchmark.py to support .swmd.min.md input
 - Added unified parallel benchmark runner 	ools/bench/parallel_trm_hrm_codec_bench.py to execute TRM SWMD runs and HRM codec runs concurrently with one manifest.
 - Added README usage section and validated smoke run (	rm_ok=2, hrm_ok=2) using D:\Download\codec.txt.
 
+
+## 2026-02-11 Turn 8
+- Ran a strict sequential TRM benchmark across all 40 SWMD-min worlds with 3 episodes and 200-step cap, using latent tracing and SWMD pathing metrics.
+- Emitted SAEv1 artifacts under tools/bench/out/sequential_codec_bench_run6/trm_200steps_explore_SAEv1 and packaged them into zip-this2.zip.
+- Verified aggregate manifest stats: worlds=40, ok=40, steps avg=35.75, terminal_nodes_total=6, special_hits_total=0.
+

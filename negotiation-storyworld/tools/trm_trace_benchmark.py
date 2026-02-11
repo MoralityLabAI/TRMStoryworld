@@ -554,6 +554,8 @@ def run_episode_swmd(
     episode_idx: int,
     latent_dim: int,
     latent_weight: float,
+    min_turns_before_terminal: int = 2,
+    global_visit_counts: Optional[Dict[str, int]] = None,
 ) -> Dict[str, Any]:
     cur = start_id
     leaf_hashes: List[str] = []
@@ -562,6 +564,8 @@ def run_episode_swmd(
     h = np.zeros((int(max(1, latent_dim)),), dtype=np.float32)
     final_outcome = "end"
     final_node = start_id
+    visited_nodes = {start_id}
+    known_ids = set(swmd_encounters.keys())
     for turn in range(max_steps):
         enc = swmd_encounters.get(cur)
         if enc is None:
@@ -573,13 +577,41 @@ def run_episode_swmd(
         state_hash = h_hex(stable_json_swmd({"encounter": enc.enc_id, "turn": turn}))
         candidates: List[SwmdCandidateEval] = []
         for pick_idx, opt in enumerate(options):
-            rxn = sorted(opt.reactions, key=lambda r: r.rxn_id)[0] if opt.reactions else None
-            desirability = 0 if rxn is None else parse_desirability_int(rxn.desirability)
-            feat = latent_features_swmd(turn, enc, opt, rxn, pick_idx)
-            h_after = latent_update(h, feat)
-            latent_norm = float(np.linalg.norm(h_after))
-            latent_bonus = int(round(float(latent_weight) * latent_norm * 1000.0))
-            base_score = int(1000 * desirability + 10 * len(opt.reactions))
+            reaction_list = sorted(opt.reactions, key=lambda r: r.rxn_id) if opt.reactions else [None]
+            for rxn in reaction_list:
+                desirability = 0 if rxn is None else parse_desirability_int(rxn.desirability)
+                consequence = "" if (rxn is None or not rxn.consequence) else str(rxn.consequence)
+                next_known = bool(consequence and consequence in known_ids)
+                next_enc = swmd_encounters.get(consequence) if next_known else None
+                next_is_terminal = bool(next_enc is not None and len(next_enc.options) == 0)
+                is_broken_edge = bool(consequence and not next_known)
+                no_edge = not consequence
+                early_turn = turn < max(0, int(min_turns_before_terminal))
+
+                feat = latent_features_swmd(turn, enc, opt, rxn, pick_idx)
+                h_after = latent_update(h, feat)
+                latent_norm = float(np.linalg.norm(h_after))
+                latent_bonus = int(round(float(latent_weight) * latent_norm * 1000.0))
+
+                # Prefer valid continuation paths so episodes can explore the graph.
+                structure_score = 0
+                if is_broken_edge:
+                    structure_score -= 200_000
+                if no_edge and early_turn:
+                    structure_score -= 25_000
+                if consequence and next_known:
+                    structure_score += 4_000
+                    if global_visit_counts is not None:
+                        seen = int(global_visit_counts.get(consequence, 0))
+                        structure_score += max(0, 3_000 - (300 * seen))
+                if consequence and consequence in visited_nodes:
+                    structure_score -= 2_000
+                if next_is_terminal:
+                    structure_score += 1_000
+                if next_is_terminal and early_turn:
+                    structure_score -= 2_500
+
+                base_score = int(1000 * desirability + 10 * len(opt.reactions) + structure_score)
             candidates.append(
                 SwmdCandidateEval(
                     pick_idx=pick_idx,
@@ -612,6 +644,8 @@ def run_episode_swmd(
                 "desirability": best.desirability,
                 "reaction_count": len(chosen_opt.reactions),
                 "latent_bonus": best.latent_bonus,
+                "next_known": bool(next_id and next_id in known_ids),
+                "early_terminal": bool((not next_id) and turn < max(0, int(min_turns_before_terminal))),
             },
         }
         out_hash = h_hex(stable_json_swmd({"next": next_id or "END"}))
@@ -688,6 +722,10 @@ def run_episode_swmd(
         )
 
         final_node = next_id or final_node
+        if next_id:
+            visited_nodes.add(next_id)
+            if global_visit_counts is not None:
+                global_visit_counts[next_id] = int(global_visit_counts.get(next_id, 0)) + 1
         if not next_id:
             final_outcome = "terminal"
             break
@@ -749,6 +787,32 @@ def summarize(episodes: List[Dict[str, Any]]) -> Dict[str, Any]:
     }
 
 
+def summarize_swmd_pathing(episodes: List[Dict[str, Any]]) -> Dict[str, Any]:
+    visited_nodes = set()
+    terminal_nodes = set()
+    special_endings = set()
+    for ep in episodes:
+        for step in ep.get("steps", []):
+            event = step.get("event", {})
+            cur = str(event.get("encounter_id") or "")
+            nxt = str(event.get("next_encounter") or "")
+            if cur:
+                visited_nodes.add(cur)
+            if nxt:
+                visited_nodes.add(nxt)
+            if not nxt:
+                opt = str(event.get("option_id") or "")
+                key = f"{cur}:{opt}" if cur else opt
+                terminal_nodes.add(key)
+                if "secret" in key.lower() or "ending" in key.lower() or key.lower().startswith("end"):
+                    special_endings.add(key)
+    return {
+        "unique_nodes_visited": len(visited_nodes),
+        "terminal_nodes_reached": len(terminal_nodes),
+        "special_ending_hits": len(special_endings),
+    }
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--world", type=str, required=True)
@@ -763,6 +827,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--summary-out", type=str, default="logs/trm_sw1_summary.json")
     parser.add_argument("--latent-dim", type=int, default=16)
     parser.add_argument("--latent-weight", type=float, default=0.0)
+    parser.add_argument("--swmd-min-turns-before-terminal", type=int, default=2)
     return parser.parse_args()
 
 
@@ -805,6 +870,7 @@ def main() -> int:
     nmap = {}
     swmd_encounters: Dict[str, SwmdEncounter] = {}
     swmd_start_id = ""
+    global_visit_counts: Dict[str, int] = {}
     if is_swmd:
         swmd_world = parse_swmd(world_path)
         swmd_encounters = {e.enc_id: e for e in swmd_world.encounters}
@@ -827,6 +893,8 @@ def main() -> int:
                 episode_idx=idx,
                 latent_dim=args.latent_dim,
                 latent_weight=args.latent_weight,
+                min_turns_before_terminal=args.swmd_min_turns_before_terminal,
+                global_visit_counts=global_visit_counts,
             )
         else:
             ep = run_episode(
@@ -859,6 +927,8 @@ def main() -> int:
     summary["latent_dim"] = int(args.latent_dim)
     summary["latent_weight"] = float(args.latent_weight)
     summary["world_input_type"] = "swmd.min.md" if is_swmd else "storyworld.json"
+    if is_swmd:
+        summary["pathing"] = summarize_swmd_pathing(episodes)
     summary_out.parent.mkdir(parents=True, exist_ok=True)
     summary_out.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))
